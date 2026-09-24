@@ -18,7 +18,14 @@ npm run lint
 node tests/record-integrity.cjs
 node tests/dashboard-state.cjs
 node tests/workspace-intelligence.cjs
+node tests/personalization.cjs
 npm run build
 ```
 
 The browser storage service uses atomic IndexedDB transactions, record versions, relationship checks and explicit errors when storage is unavailable or full. A name is not an access-control mechanism. Do not change the old server APIs to return all records without authentication.
+
+## Personalized planning
+
+New workspaces can complete a resumable nine-question assessment. Home adapts to selected priorities and capacity, suggested goals require explicit acceptance, and hour targets use documented experience totals. Returning users can open **Your Pathly plan** from the profile menu.
+
+**Ask Pathly is a local rules-based planning guide, not a connected language model.** Conversation history stays in this browser; proposed changes open existing editors for review. See [personalization architecture and provider requirements](docs/personalization.md) before enabling generative AI.

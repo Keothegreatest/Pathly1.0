@@ -1,0 +1,34 @@
+import type {PathlyContext} from './assistant-context';
+import type {AssistantAnswer,AssistantAction} from './assistant-types';
+import {goalLabel} from './personalization';
+/** Explicit deterministic planning mode. No model, admissions scoring or invented history. */
+export function answerFromRecords(question:string,c:PathlyContext):AssistantAnswer{
+ const q=question.toLowerCase(),p=c.profile;const actions:AssistantAction[]=[];const paragraphs:string[]=[];
+ const cycle=p.year?`Your target application year is ${p.year}.`:'You haven’t set an application year, so this plan doesn’t assume a deadline.';
+ const capacity=p.capacity?`You selected ${p.capacity} per week. Start with ${p.capacity==='Less than 2 hours'?'one small step':p.capacity==='2–5 hours'?'one or two manageable steps':'a small number of focused steps'} rather than adding every commitment at once.`:'Set your weekly capacity in your Pathly plan to size your next steps.';
+ const hours=q.match(/\b(\d{1,6})\s*(?:clinical\s*)?hours?\b/);
+ if(hours&&/clinical|patient/.test(q)){
+  const total=Number(hours[1]);const current=c.experienceTotals['Clinical Experience']?.hours||0;
+  if(total>0&&total<=100000){paragraphs.push(`You have ${current} documented clinical hours. A ${total}-hour target would leave ${Math.max(0,total-current)} hours to go. This is your chosen target, not an admissions requirement.`,capacity);actions.push({label:`Review ${total}-hour goal`,destination:{page:'Goals',kind:'goal',data:{title:`Reach ${total} clinical hours`,category:'Clinical Experience',total:String(total),unit:'hours',progressSource:'Category hours',status:'Not Started'}}});}else paragraphs.push('Choose a clinical-hours target between 1 and 100,000 hours. It should reflect your own plan, not an assumed admissions requirement.');
+ }else if(/research/.test(q)&&!/school|requirement/.test(q)){
+  const research=c.experienceTotals.Research;paragraphs.push(research?`You have ${research.count} research experience(s) and ${research.hours} hours documented.`:p.started.includes('Research')?'You said you’ve started research, but haven’t logged a research experience yet.':'You haven’t logged research in Pathly. That doesn’t establish that you have no research experience.');
+  paragraphs.push(p.goals.includes('research')?'Research is a priority because you selected it as a current goal. A practical first step is to identify one opportunity that fits your interests and ask about its time commitment.':'Research is not one of your selected current goals. Consider whether it fits your interests before adding it as a priority.',cycle,capacity);
+  actions.push({label:research?'Review research experiences':'Record research experience',destination:{page:'Experiences',tab:'experience',...(!research?{kind:'experience',data:{category:'Research'}}:{})}});
+ }else if(/reflect|stor|theme|essay|notes/.test(q)){
+  const themes=[...new Set(c.stories.flatMap(s=>s.themes.split(',').map(t=>t.trim()).filter(Boolean)))];paragraphs.push(`You have ${c.reflections.length}${c.reflections.length===5?'+':''} recent reflection(s) and ${c.stories.length}${c.stories.length===5?'+':''} recent Story Moment(s) available here.`,themes.length?'Themes you recorded: '+themes.join(', ')+'.':'No story themes are recorded yet.');paragraphs.push('Start with one real moment: what happened, what you did, what changed, and what you learned. Keep your own words and leave out patient-identifying details. This planning guide does not invent or rewrite your experiences.');
+  if(c.experiences[0])actions.push({label:'Start a reflection',destination:{page:'Experiences',tab:'reflection',kind:'reflection',data:{experience:c.experiences[0].id}}});else actions.push({label:'Add an experience first',destination:{page:'Experiences',kind:'experience'}});
+ }else if(/school|requirement/.test(q)){
+  const missing=c.requirements.filter(r=>!['Complete','Not applicable'].includes(r.status)),verified=missing.filter(r=>r.verified);
+  paragraphs.push(`You have ${c.schools.length} saved school(s). ${missing.length} recorded requirement(s) are unresolved; ${verified.length} have a source and verification date you entered.`,missing.length?'Review each source and your completion evidence. Saved requirements are student-entered records, not independently verified by Pathly.':'Pathly has no unresolved requirements recorded. This does not prove that every school requirement is met.');
+  if(!c.schools.length)paragraphs.push('Start with one program that interests you, then document requirements from its official website. I can’t recommend specific schools from an unconnected catalog.');
+  actions.push({label:c.schools.length?'Review schools':'Add a school',destination:{page:'Schools',tab:'school',...(!c.schools.length?{kind:'school'}:{})}});
+ }else if(/progress|track|improv|close|enough/.test(q)){
+  const totals=Object.entries(c.experienceTotals);paragraphs.push(totals.length?'Your recorded experience: '+totals.map(([k,v])=>`${k}: ${v.hours} hours across ${v.count} experience(s)`).join('; ')+'.':'You haven’t documented experiences yet. Your assessment answers describe your starting point but are not logged hours.');if(c.target)paragraphs.push(`${c.target.current} / ${c.target.total} hours toward your personal clinical target.`);paragraphs.push(cycle,'Pathly can show preparation evidence, but cannot judge admission chances or whether you are “competitive.” There isn’t a historical semester snapshot here to claim improvement over time.');actions.push({label:'Review preparation evidence',destination:{page:'Application',tab:'readiness'}});
+ }else if(/focus|priorit|plan|semester|week|month|next|goal|shadow|volunteer|clinical|letter|exam|application/.test(q)){
+  paragraphs.push(cycle,capacity);if(p.concern)paragraphs.push(`You told Pathly your main question is “${p.concern}”`);
+  if(c.actions.length){paragraphs.push(c.actions.map((a,i)=>`${i+1}. ${a.title} — ${a.evidence}`).join('\n'));actions.push(...c.actions.map(a=>({label:a.label,destination:a.destination})));}
+  else if(p.goals.length){paragraphs.push('Your selected priorities are '+p.goals.map(k=>goalLabel(k,p)).join(', ')+'. Review one active goal and choose a small next step.');actions.push({label:'Review goals',destination:{page:'Goals'}})}
+  else {paragraphs.push('There isn’t enough saved context to select a personal priority yet. Add an experience or complete your Pathly plan.');actions.push({label:'Add an experience',destination:{page:'Experiences',kind:'experience'}})}
+ }else paragraphs.push('This local planning guide can explain your saved priorities, review documented progress, help structure a reflection, and point you to school requirements. It is not a connected language model. Try “What should I focus on next?” or “How close am I to my clinical-hours goal?”');
+ return {text:paragraphs.join('\n\n'),actions:actions.slice(0,3),mode:'local-planning'};
+}

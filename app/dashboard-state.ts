@@ -1,3 +1,4 @@
+import {readProfile,profileActions} from './personalization';
 import type {Entry} from './model';
 import {readiness, upcoming, type Destination} from './journey';
 import {recommendActions} from './recommendations';
@@ -9,7 +10,7 @@ const of = (records:Entry[], kind:string) => records.filter(r=>r.kind===kind);
 export function getDashboardGreeting(stage:StudentStage) {
   return {BRAND_NEW:'Start with one experience. Build a clearer picture from there.',EARLY_BUILDING:'Keep the details today. See how your next chapter takes shape.',ACTIVE_BUILDING:'Connect what you’re doing with what comes next.',APPLICATION_PREP:'Bring your experiences, requirements, and application plans together.'}[stage];
 }
-export function getNextBestActions(records:Entry[], now=new Date()) { return recommendActions(records,now).slice(0,3); }
+export function getNextBestActions(records:Entry[], now=new Date()) { const p=readProfile(records.find(r=>r.kind==='profile'));return [...recommendActions(records,now),...profileActions(records,now)].sort((a,b)=>b.priority-a.priority||a.id.localeCompare(b.id)).slice(0,p.capacity==='Less than 2 hours'?1:p.capacity==='2–5 hours'?2:3); }
 export function getQuickActions(records:Entry[]):QuickAction[] {
   const experiences=of(records,'experience'), schools=of(records,'school'), goals=of(records,'goal');
   const actions:QuickAction[]=[];

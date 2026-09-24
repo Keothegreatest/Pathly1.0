@@ -1,6 +1,7 @@
+import {validateAssessment} from './personalization';
 import type {Entry} from './model';
 import {recordLinks,taskComplete,letterStatus} from './record-links';
-export type BrowserWorkspace={records:Entry[];hasCompletedOnboarding:boolean};
+export type BrowserWorkspace={records:Entry[];hasCompletedOnboarding:boolean;conversation?:import('./assistant-types').AssistantMessage[];milestones?:string[]};
 const kinds=new Set(['experience','reflection','story','school','requirement','goal','letter','essay','task','profile','capture','schoolNote']);
 export function changeRecord(state:BrowserWorkspace,method:string,input:unknown):{record?:Entry;error?:string;status?:number}{
  if(!input||typeof input!=='object')return {error:'A valid entry is required.',status:400};
@@ -14,7 +15,7 @@ export function changeRecord(state:BrowserWorkspace,method:string,input:unknown)
   state.records=state.records.filter(x=>x.id!==r.id);return {};
  }
  if(!kinds.has(r.kind)||previous&&previous.kind!==r.kind||!r.data||typeof r.data!=='object'||Array.isArray(r.data)||Object.values(r.data).some(x=>typeof x!=='string'))return {error:'Record fields must contain text values.',status:400};
- const data={...r.data};if(!data.title?.trim()||data.title.length>250)return {error:'Give this entry a name before saving.',status:400};
+ const data={...r.data};if(r.kind==='profile'){const error=validateAssessment(data);if(error)return {error,status:400};}if(!data.title?.trim()||data.title.length>250)return {error:'Give this entry a name before saving.',status:400};
  if(JSON.stringify(data).length>150000)return {error:'This entry is too large.',status:413};
  if(r.kind==='profile'&&state.records.some(x=>x.kind==='profile'&&x.id!==r.id))return {error:'A profile already exists.',status:409};
  for(const key of ['hours','weekly','baseline','current','total','limit','characterLimit'])if(data[key]&&(Number(data[key])<0||!Number.isFinite(Number(data[key]))))return {error:'Amounts must be valid non-negative numbers.',status:400};

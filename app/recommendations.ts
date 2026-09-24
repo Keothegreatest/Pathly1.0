@@ -1,4 +1,5 @@
 import type { Entry } from './model';
+import {goalProgress} from './goal-progress';
 import {getStudentStage,getStagePriority} from './student-context';
 import {taskComplete,letterStatus,recordDestination} from './record-links';
 import type { Destination, NextAction } from './journey';
@@ -45,8 +46,7 @@ export function recommendActions(records: Entry[], now = new Date()): NextAction
   }
   for (const goal of of('goal').filter(g => !['Completed','Paused'].includes(g.data.status))) {
     const days = daysTo(goal.data.target);
-    const linked = of('experience').find(e => e.id === goal.data.experience);
-    const current = goal.data.progressSource === 'Linked experience hours' && linked ? Math.max(0,Number(linked.data.hours || 0)-Number(goal.data.baseline || 0)) : Number(goal.data.current || 0);
+    const {current} = goalProgress(goal,records);
     const progress = Number(goal.data.total) > 0 ? `${current} / ${goal.data.total} ${goal.data.unit || ''}` : goal.data.status || 'Not Started';
     if (Number.isFinite(days) && days <= 30 || goal.data.priority === 'High') add('goal-' + goal.id, `Review ${goal.data.title}`, 'Your goal is approaching its target or marked high priority. Review its progress and choose the next step.', `${progress}${goal.data.target ? ' · Target ' + goal.data.target : ''}${goal.data.priority === 'High' ? ' · High priority' : ''}`, 'Update goal', Number.isFinite(days) && days <= 7 ? 93 : 78, edit('Goals', goal));
     if (goal.data.category && !of('experience').some(e => e.data.category === goal.data.category) && ['Clinical Experience','Shadowing','Research','Volunteering','Community Service','Leadership'].includes(goal.data.category)) add('category-' + goal.id, `Build toward ${goal.data.title}`, 'You set a goal in this category, but no matching experience has been documented. Add relevant work you have done or revisit the goal.', `${goal.data.category} · 0 documented experiences · Goal: ${goal.data.title}`, 'Add experience', 51, {page:'Experiences',kind:'experience',data:{category:goal.data.category}});

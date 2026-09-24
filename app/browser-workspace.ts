@@ -14,3 +14,7 @@ export async function workspaceRequest(path:string,options:RequestInit={}):Promi
   const result=changeRecord(state,options.method,JSON.parse(String(options.body)));return Response.json(result,{status:result.status||200});
  },!!options.method&&options.method!=='GET');}catch{return Response.json({error:'Your browser could not save or open this workspace. Check available storage and browser privacy settings, then try again.'},{status:503});}
 }
+import type {AssistantMessage} from './assistant-types';
+export async function loadConversation():Promise<AssistantMessage[]>{return transaction(state=>state.conversation||[],false)}
+export async function saveConversation(messages:AssistantMessage[]){if(messages.length>30||messages.some(m=>!['user','assistant'].includes(m.role)||m.text.length>20000))throw new Error('Invalid conversation');await transaction(state=>{state.conversation=messages},true)}
+export async function claimMilestone(id:string){return transaction(state=>{const seen=state.milestones||[];if(seen.includes(id))return false;state.milestones=[...seen,id].slice(-300);return true},true)}
