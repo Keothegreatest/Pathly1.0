@@ -1,4 +1,4 @@
-import {getChatGPTUser} from '@/app/chatgpt-auth';
+import {getUser} from '@/app/auth';
 import {database} from '@/db/raw';
 import {recordLinks,letterStatus} from '@/app/record-links';
 import type {Entry} from '@/app/model';
@@ -11,14 +11,14 @@ function storedData(value:string):Record<string,string>{
 }
 function error(message:string,status=400){return Response.json({error:message},{status,headers:{'Cache-Control':'no-store'}});}
 export async function GET(){
-  const user=await getChatGPTUser();if(!user)return error('Sign in to open your workspace.',401);
+  const user=await getUser();if(!user)return error('Sign in to open your workspace.',401);
   try{
     const result=await database().prepare('SELECT id,kind,data,version,updated FROM records WHERE owner = ? ORDER BY updated DESC').bind(user.userId).all<StoredRecord>();
     return Response.json({name:user.fullName||'',hasCompletedOnboarding:result.results.some(r=>r.kind==='preferences'&&storedData(r.data).hasCompletedOnboarding==='true'),records:result.results.filter(r=>r.kind!=='preferences').map(r=>({...r,data:storedData(r.data)}))},{headers:{'Cache-Control':'no-store'}});
   }catch{return error('Your records could not be loaded. Please try again.',503);}
 }
 export async function PUT(request:Request){
-  const user=await getChatGPTUser();if(!user)return error('Sign in to save your work.',401);
+  const user=await getUser();if(!user)return error('Sign in to save your work.',401);
   const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return error('Request origin not allowed.',403);
   try{
     const raw=await request.text();if(raw.length>150000)return error('This entry is too large.',413);
@@ -67,7 +67,7 @@ export async function PUT(request:Request){
   }catch{return error('Your entry was not saved. Keep this window open and try again.',503);}
 }
 export async function DELETE(request:Request){
-  const user=await getChatGPTUser();if(!user)return error('Sign in to manage your records.',401);
+  const user=await getUser();if(!user)return error('Sign in to manage your records.',401);
   const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return error('Request origin not allowed.',403);
   let body:Record<string,unknown>;try{const parsed=await request.json();if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error();body=parsed as Record<string,unknown>;}catch{return error('Choose a valid entry.');}
   if(typeof body.id!=='string'||typeof body.version!=='number'||!Number.isInteger(body.version)||body.version<1)return error('Choose a saved entry.');
@@ -78,3 +78,4 @@ export async function DELETE(request:Request){
     return Response.json({deleted:true},{headers:{'Cache-Control':'no-store'}});
   }catch{return error('Your entry was not deleted. Try again.',503);}
 }
+

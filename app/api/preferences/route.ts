@@ -1,9 +1,9 @@
-import {getChatGPTUser} from '@/app/chatgpt-auth';
+import {getUser} from '@/app/auth';
 import {database} from '@/db/raw';
 
 /** Idempotent and account-scoped. Replaying never resets completion. */
 export async function PUT(request: Request) {
-  const user = await getChatGPTUser();
+  const user = await getUser();
   if (!user) return Response.json({error:'Sign in to save your preferences.'},{status:401});
   const origin = request.headers.get('origin');
   if (origin && origin !== new URL(request.url).origin) return Response.json({error:'Request origin not allowed.'},{status:403});
@@ -23,3 +23,4 @@ export async function PUT(request: Request) {
     return Response.json({error:'We couldn’t save your tutorial preference. Try again, or close for now.'},{status:503});
   }
 }
+
