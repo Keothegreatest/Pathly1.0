@@ -4,10 +4,7 @@ import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
 
-const PATHLY_DATABASE_ID =
-  "767d8ba6-8d60-4681-93f6-6a468c4487f4";
-
-const { d1, r2 } = hostingConfig;
+const { r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
@@ -16,14 +13,7 @@ const managedLinux = readExecutionProfile() === "managed-linux";
 const localBindingConfig = {
   main: "vinext/server/fetch-handler",
   compatibility_flags: ["nodejs_compat"],
-  d1_databases: d1
-    ? [
-        {
-          binding: d1,
-          database_id: PATHLY_DATABASE_ID,
-        },
-      ]
-    : [],
+  d1_databases: [],
   r2_buckets: r2
     ? [
         {
@@ -65,4 +55,3 @@ export default defineConfig(async () => {
     ],
   };
 });
-

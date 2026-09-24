@@ -1,4 +1,5 @@
 'use client';
+import {workspaceRequest} from './browser-workspace';
 
 import {useEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
@@ -60,7 +61,7 @@ export function Tutorial({replay,onNavigate,onClose}: {
     if(replay){navigate.current('Home');onClose();return;}
     busy.current=true;setSaving(true);setError('');
     try {
-      const response=await fetch('/api/preferences',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hasCompletedOnboarding:true,outcome}),signal:AbortSignal.timeout(10000)});
+      const response=await workspaceRequest('/api/preferences',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({hasCompletedOnboarding:true,outcome}),signal:AbortSignal.timeout(10000)});
       if(!response.ok)throw new Error('We couldn’t save your tutorial preference. Try again, or close for now.');
       navigate.current('Home');onClose();
     } catch {setError('We couldn’t save your tutorial preference. Try again, or close for now. It may appear again next time.');}

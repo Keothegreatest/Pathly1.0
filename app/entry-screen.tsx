@@ -1,26 +1,10 @@
 'use client';
 import Image from 'next/image';
 import {useState} from 'react';
-
-export function AccountLoading() {
-  return <main className="entry-screen account-loading" aria-busy="true"><div className="loading-lockup">
-    <span className="loading-artwork"><Image unoptimized src="/pathly-brand.png" width={2508} height={627} alt="Pathly" /></span>
-    <div className="loading-dots" aria-hidden="true"><i/><i/><i/></div>
-    <p role="status">Opening your workspace…</p>
-  </div></main>;
+import {startWorkspace} from './browser-workspace';
+export function AccountLoading(){return <main className="entry-screen account-loading" aria-busy="true"><div className="loading-lockup"><span className="loading-artwork"><Image unoptimized src="/pathly-brand.png" width={2508} height={627} alt="Pathly"/></span><div className="loading-dots" aria-hidden="true"><i/><i/><i/></div><p role="status">Opening your workspace…</p></div></main>}
+export function WelcomeScreen({error,onRetry,onContinue}:{error?:string;onRetry?:()=>void;onContinue?:()=>void}){
+ const [name,setName]=useState(''),[pending,setPending]=useState(false),[failure,setFailure]=useState('');
+ async function begin(e:React.FormEvent){e.preventDefault();if(pending)return;setPending(true);setFailure('');try{await startWorkspace(name);onContinue?.()}catch{setFailure('Your name could not be saved. Please allow browser storage and try again.')}finally{setPending(false)}}
+ return <main className="entry-screen"><div className="entry-column"><Image unoptimized className="entry-logo" src="/pathly-brand.png" width={2508} height={627} alt="Pathly"/><section className="entry-card"><h1>Make this space yours.</h1><p>What would you like us to call you?</p>{(error||failure)&&<p className="error" role="alert">{error||failure}</p>}{onRetry?<button className="primary" onClick={onRetry}>Try again</button>:<form onSubmit={begin}><label className="field"><span>Your name</span><input autoComplete="given-name" required maxLength={80} value={name} onChange={e=>setName(e.target.value)} placeholder="First name or preferred name" disabled={pending}/></label><button className="primary" type="submit" disabled={pending||!name.trim()}>{pending?'Opening your workspace…':'Continue to Pathly'}</button></form>}<small>No account needed. Your name and records stay in this browser. Anyone using this browser profile can open them. Export your journey regularly—clearing browser data removes it.</small></section></div></main>
 }
-
-/** Google authorization is completed on the server. */
-export function WelcomeScreen({error, onRetry}: {error?:string; onRetry?:()=>void}) {
-  const [pending,setPending]=useState(false);
-  return <main className="entry-screen"><div className="entry-column">
-    <Image unoptimized className="entry-logo" src="/pathly-brand.png" width={2508} height={627} alt="Pathly" />
-    <section className="entry-card"><h1>Welcome to Pathly</h1>
-      <p>Your experiences, reflections, and next steps. Together in one personal workspace.</p>
-      {error&&<p className="error" role="alert">{error}</p>}
-      {onRetry?<button className="primary" onClick={onRetry}>Try again</button>:<form action="/api/auth/google" method="GET" onSubmit={()=>setPending(true)}><button className="primary" type="submit" disabled={pending} aria-busy={pending}>{pending?'Connecting to Google…':'Continue with Google'}</button></form>}
-      <small>Sign in or create your workspace with your Google account.</small>
-    </section>
-  </div></main>;
-}
-
