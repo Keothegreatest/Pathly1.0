@@ -1,0 +1,115 @@
+/* Shared surface and motion language; keeps the established Pathly palette. */
+:root {
+  --surface-standard: color-mix(in srgb, var(--card) 95%, var(--ivory));
+  --surface-interactive: color-mix(in srgb, var(--surface-standard) 94%, var(--primary));
+  --surface-border: color-mix(in srgb, var(--primary) 14%, var(--background));
+  --surface-border-hover: color-mix(in srgb, var(--primary) 28%, var(--background));
+  --radius-panel: 12px;
+  --radius-control: 7px;
+  --motion-control: 210ms ease;
+  --motion-panel: 300ms ease;
+  --nav-transition: var(--motion-control);
+}
+
+/* The tagline shares the artwork's width, rather than the sidebar's width. */
+.pathly-brand { align-items: center; }
+.brand-tagline { align-self: stretch; text-align: center; margin: 7px 0 0; }
+.pathly-brand--compact .brand-tagline { margin: 2px 0 0; text-align: center; }
+
+.standing-strip { display: block; border: 0; padding: 0; margin-bottom: 38px; }
+.standing-strip dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-top: 20px; }
+.standing-strip dl>div,.analytics-stats>strong,.detail-metrics>span,.recap-counts>span {
+  background: var(--surface-standard); border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel); padding: 20px 22px; min-width: 0;
+  transition: background-color var(--motion-control), border-color var(--motion-control);
+}
+.standing-strip dt { font-size: 12px; margin-bottom: 12px; }
+.standing-strip dd { font-size: 30px; font-weight: 550; color: var(--ivory); }
+.standing-strip dd small { font-size: 11px; font-weight: 400; }
+.analytics-stats { gap: 12px; }
+.analytics-stats>strong { font-size: 28px; font-weight: 550; padding: 18px; color: var(--ivory); }
+.analytics-stats small { line-height: 1.6; font-size: 12px; }
+.detail-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; border: 0; }
+.detail-metrics>span { padding: 16px; }
+.detail-metrics b,.recap-counts b { color: var(--ivory); font-weight: 550; }
+.recap-counts { display: flex; flex-wrap: wrap; gap: 12px; }
+.recap-counts>span { padding: 14px 18px; }
+
+.card,.record-card,.readiness-section,.priority-item.featured,.theme-board { border-radius: var(--radius-panel); }
+.record-card,.card,.readiness-section { background: var(--surface-standard); border-color: var(--surface-border); }
+.record-card,.goal-summary,.priority-item,.readiness-line,.upcoming-item,.journey-event>button,.related-records>button {
+  transition: background-color var(--motion-control),border-color var(--motion-control),box-shadow var(--motion-control);
+}
+.priority-list { border-top: 0; gap: 8px; }
+.priority-item { border-bottom: 0; padding: 24px 18px; border-radius: var(--radius-panel); }
+.priority-item.featured { margin: 0 0 8px; padding: 24px; }
+.upcoming-section { border-bottom: 0; margin-top: 26px; padding: 0 0 8px; }
+.story-spotlight { background: var(--surface-inset); border: 1px solid var(--surface-border); border-radius: var(--radius-panel); padding: 24px; }
+.connected-goals { border-top: 0; margin-top: 42px; padding-top: 0; }
+.goal-summary-grid { gap: 16px; }
+.goal-summary,.goal-summary:last-child { padding: 22px; background: var(--surface-standard); border: 1px solid var(--surface-border); border-radius: var(--radius-panel); }
+.goal-summary>div:last-child>span { color: var(--ivory); font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.goal-detail-progress { padding: 22px; background: var(--surface-standard); border: 1px solid var(--surface-border); border-radius: var(--radius-panel); }
+.readiness-overview .readiness-map { gap: 12px; }
+.readiness-overview .readiness-line { padding: 18px; background: var(--surface-standard); border: 1px solid var(--surface-border); border-radius: var(--radius-panel); }
+.readiness-grid>.card { padding: 22px; border: 1px solid var(--surface-border); border-radius: var(--radius-panel); background: var(--surface-inset); }
+.preparation { border: 0; padding-top: 12px; }
+.recent-section { margin-top: 42px; }
+.empty-state { border: 1px solid var(--surface-border); background: var(--surface-inset); border-radius: var(--radius-panel); padding: 40px; gap: 20px; }
+.sample-note { border-bottom: 0; margin-bottom: 26px; }
+.view-toolbar { padding: 14px; background: var(--surface-inset); border: 1px solid var(--surface-border); border-radius: var(--radius-panel); }
+.view-toolbar:empty { display: none; }
+
+/* A single measured indicator supports wrapped tabs and keyboard selection. */
+.workspace-tabs-track { position: relative; }
+.view-tabs { border-bottom-color: var(--surface-border); gap: 22px; }
+.view-tabs [data-slot=tabs-trigger][data-state=active] { border-bottom-color: transparent; }
+.tab-selection { position: absolute; top: 0; left: 0; height: 2px; background: var(--primary); border-radius: 2px; pointer-events: none; transition: transform var(--motion-control),width var(--motion-control),opacity var(--motion-control); }
+
+.primary,.secondary,.icon-button,[data-slot=button],[data-slot=select-trigger],.field input,.field textarea {
+  border-radius: var(--radius-control);
+  transition: background-color var(--motion-control),border-color var(--motion-control),color var(--motion-control),transform var(--motion-control),box-shadow var(--motion-control);
+}
+.primary,.secondary,[data-slot=select-trigger] { min-height: 42px; }
+.compact-button { min-height: 36px; }
+.field input,.field textarea,[data-slot=select-trigger] { border-color: var(--surface-border-hover); }
+[data-slot=select-trigger]:focus-visible,.field input:focus,.field textarea:focus { border-color: var(--ring); outline: 2px solid color-mix(in srgb,var(--ring) 30%,transparent); outline-offset: 2px; box-shadow: none; }
+.inline-action svg,.text-button svg { transition: transform var(--motion-control); }
+[data-slot=progress-indicator] { transition: transform 320ms ease; }
+[data-slot=select-content],[data-slot=dropdown-menu-content],[data-slot=popover-content] { border-radius: var(--radius-control); animation-duration: 210ms; animation-timing-function: ease; }
+[data-slot=dialog-content],[data-slot=alert-dialog-content] { border-radius: var(--radius-panel); animation-duration: 300ms; animation-timing-function: ease; }
+.record-detail { transition-duration: 300ms!important; animation-duration: 300ms; }
+[data-sonner-toast] { border-radius: var(--radius-panel)!important; }
+[data-sonner-toast][data-type=success] { border-color: var(--surface-border-hover)!important; }
+[data-sonner-toast][data-type=success] [data-icon] { color: var(--success); }
+.records-grid,.timeline-workspace,.readiness-overview,.bottom-grid { animation: workspace-enter 260ms ease both; }
+@keyframes workspace-enter { from {opacity: 0; transform: translateY(3px);} to {opacity: 1; transform: translateY(0);} }
+
+@media(hover:hover) {
+  .standing-strip dl>div:hover,.analytics-stats>strong:hover,.detail-metrics>span:hover,.recap-counts>span:hover,.record-card:hover,.goal-summary:hover,.readiness-overview .readiness-line:hover { background: var(--surface-interactive); border-color: var(--surface-border-hover); }
+  .priority-item:not(.featured):hover,.upcoming-item:hover,.journey-event>button:hover,.related-records>button:hover { background: var(--surface-inset); }
+  .primary:not(:disabled):hover,.secondary:not(:disabled):hover { transform: translateY(-1px); }
+  .primary:not(:disabled):active,.secondary:not(:disabled):active { transform: translateY(0); }
+  .inline-action:hover svg,.text-button:hover svg { transform: translateX(2px); }
+  [data-slot=select-trigger]:hover,.field input:hover,.field textarea:hover { border-color: var(--ring); }
+}
+@media(max-width:1000px) { .upcoming-section { margin-top: 0; } }
+@media(max-width:767px) {
+  .standing-strip dl { gap: 9px; }
+  .standing-strip dl>div { padding: 16px 12px; }
+  .standing-strip dt { font-size: 11px; min-height: 34px; margin-bottom: 8px; }
+  .standing-strip dd { font-size: 26px; }
+  .standing-strip dd small { display: block; margin: 6px 0 0; }
+  .heading .primary { min-height: 42px; }
+  .priority-item.featured { padding: 20px; }
+  .priority-item { padding: 20px 10px; }
+  .empty-state { padding: 28px 22px; }
+  .view-tabs { gap: 16px; }
+  .view-toolbar { padding: 12px; }
+  .analytics-stats { grid-template-columns: 1fr; }
+  .detail-metrics { gap: 8px; }
+  .detail-metrics>span { padding: 12px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after { animation: none!important; transition: none!important; }
+}

@@ -1,0 +1,55 @@
+/* Light working surfaces are scoped to main; sidebar, loading, and tour retain their identity. */
+:root {--workspace-background:#f5f3ec;}
+html:has(.main),body:has(.main) {background:var(--workspace-background);}
+.main {
+  color-scheme:light;
+  --background:var(--workspace-background);
+  --foreground:#23372c;
+  --card:#fcfbf6;
+  --card-foreground:var(--foreground);
+  --primary:#355b43;
+  --primary-foreground:#fbfaf4;
+  --primary-hover:#294b36;
+  --secondary:#e8ede2;
+  --secondary-foreground:#304c38;
+  --muted:#e5e8df;
+  --muted-foreground:#5c6a5f;
+  --accent:#e0e9da;
+  --accent-foreground:#284232;
+  --border:#d8ddd1;
+  --input:#bbc6b5;
+  --ring:#4a7153;
+  --surface-inset:#efefe6;
+  --surface-hover:#e5ebdf;
+  --surface-featured:#e8eedf;
+  --border-featured:#b9cbb0;
+  --text-subtle:#606d5b;
+  --text-link:#3b6548;
+  --ivory:#273f30;
+  --warning:#795520;
+  --warning-surface:#f2e9d7;
+  --destructive:#963f35;
+  --error-surface:#f5e8e2;
+  --success:#3c6448;
+  --chart-1:#58774c;
+  --chart-2:#78907a;
+  --chart-3:#aa8958;
+  --chart-4:#698276;
+  --chart-5:#81965d;
+  --surface-standard:var(--card);
+  --surface-interactive:#f1f4e9;
+  --surface-border:#dbe0d3;
+  --surface-border-hover:#aebfa5;
+  background:var(--background);
+  color:var(--foreground);
+  min-height:100dvh;
+}
+.main .topbar {background:var(--background);--nav-text:var(--foreground);--nav-hover:var(--surface-hover);}
+.main .primary:hover {background:var(--primary-hover);}
+.main .standing-strip dd,.main .analytics-stats>strong {color:var(--foreground);}
+.main .record-card,.main .readiness-section {box-shadow:0 1px 2px #273f3005;}
+.main .priority-item.featured {border-color:var(--border-featured);}
+.main .view-tabs [data-slot=tabs-trigger][data-state=active] {color:var(--foreground);}
+.main .mobile-brand-lockup {background:var(--sidebar);border-radius:6px;padding:1px 5px;}
+.main .pathly-brand--compact .brand-artwork {width:118px;}
+.main .pathly-brand--compact .brand-artwork img {width:405px;}
