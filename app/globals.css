@@ -12,6 +12,7 @@
 @import "./light-workspace.css";
 @import "./home-dashboard.css";
 @import "./connected-workspace.css";
+@import "./editorial.css";
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

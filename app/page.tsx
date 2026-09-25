@@ -1,4 +1,4 @@
-export const metadata={title:'Pathly — Healthcare Technology & Guidance',description:'Connected software and structured guidance for the journey into healthcare. Explore Pathly’s personal workspace, planning tools, and consulting direction.'};
+export const metadata={title:'Pathly — Your Path to Healthcare, Made Clearer',description:'Track your experiences, understand your progress, and know what to work on next. One personal workspace for your pre-health journey.'};
 import {redirect} from 'next/navigation';
 import Marketing from './marketing';
 import {workspaceRoute} from './workspace-route';

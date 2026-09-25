@@ -1,47 +1,34 @@
-# Public company website and demo boundary
+# Public homepage: editorial student journey
 
-## Root cause and correction
+The public homepage tells a student-centered story: recognize scattered information, see the whole journey, preserve meaningful experiences, decide what to do next, and prepare over time. The visual reference informed typography scale, whitespace and restraint; no reference-site text, graphics or layout were copied.
 
-The previous `marketing-preview.tsx` imported `examples` from the application model, `getDashboardState`, `NextBestActions`, `ReadinessCard`, `CopilotResponse`, `sendAskPathlyMessage`, and `explainRecommendation`. Example records were run through production recommendation and assistant logic. That exposed operational metadata and provider disclosures in a public product presentation.
+## Presentation and components
 
-That component has been removed. Marketing now owns authored, illustrative content and presentation components. The real `/app` copilot, its calculations, storage, provider boundary, and record actions remain unchanged. The public demo is not a model integration and makes no claims about an enabled generative backend.
+- `app/marketing.tsx` composes the hero, recognition, four numbered chapters, future-self section, optional demos and final CTA.
+- `app/marketing/product-story.tsx` is the reusable chapter and real-interface capture component.
+- `app/editorial.css` scopes the new composition to public surfaces. Forest, cream and restrained terracotta continue the existing visual system.
+- `app/marketing/marketing-shell.tsx` supplies shared public navigation and the four-group footer.
+- `app/page.tsx` supplies outcome-led metadata and preserves legacy workspace redirects.
+- Existing `AskPathlyDemo`, `ProductDemo` and their authored fixture data remain usable under native, keyboard-accessible disclosure sections. The live application is not embedded.
 
-## Components and files
+The three main CTA moments consistently say **Start your journey**. Navigation uses the existing `/signup` and `/login` entry aliases. These still redirect to the name-based `/app` workspace; no authentication logic was changed. The public page explicitly explains browser-local storage and that an account is not required.
 
-- `app/marketing.tsx`: company narrative, technology/intelligence/consulting pillars, editorial transitions, company close, and section reveal coordination.
-- `app/marketing/marketing-shell.tsx`: independent public navigation/footer and original-logo lockup with the exact official tagline.
-- `app/marketing/demo-data.ts`: explicitly fictional product numbers, goals, experiences and five authored responses. No application record types or services.
-- `app/marketing/ask-pathly-demo.tsx`: public question selectors, context chips, narrative, statistics, priorities and links into the example workspace.
-- `app/marketing/product-demo.tsx`: six selectable workspace previews; no editing or persistence.
-- `app/marketing/interactive-journey.tsx`: observed scroll stages and keyboard-selectable desktop journey navigation.
-- `app/marketing/connected-system.tsx`: selectable nodes with an equivalent readable explanation of each relationship.
-- `app/marketing.css`: scoped public styles, cream/forest rhythm, responsive compositions, motion and focus states.
-- `app/page.tsx` and `app/public-document.tsx`: public metadata and shell reuse; existing `/app` and legacy redirects are preserved.
+## Real product images
 
-## Data and interaction contract
+`public/marketing/{home,experiences,actions,application}.webp` are lossless captures of the real application, made in an isolated local browser with fictional records from the existing example dataset. They show Home, an experience card, real computed recommendations, and application preparation. Requirement records were omitted from the screenshot fixture rather than inventing verified school sources. No real student's data was used.
 
-Public marketing must not import production assistant code, dashboard selectors, application examples, IndexedDB services or provider code. It must not request `/api/assistant`, load a conversation, mutate a profile, or save a record. Static dependency tests enforce this recursively from both public entry components.
+Captions identify the records as illustrative; values are not customer metrics or promises. The screenshots are static, use accurate dimensions to reserve layout space, have descriptive alt text, and load lazily. They are separate from the interactive examples.
 
-The default question is **Give me a progress update**. Five responses have distinct narratives, context sets, statistics and priorities. All values describe one illustrative journey, never customer or company performance. A 360 ms presentation transition follows selection; reduced-motion mode changes immediately. Timers cancel on subsequent selection/unmount. There are no background animations, model requests or model charges.
+## Public/private boundary
 
-The public product preview responds only through component state. Its links either select a preview, reveal the separate demo, or enter `/app`. The actual workspace continues to show its appropriate capability disclosures. Marketing does not imply that a live language model has been enabled.
+The public page never imports production assistant services, dashboard selectors, browser storage, or model providers. Screenshots are static assets. Interactive examples only change component state and use marketing-owned fictional fixtures. They never read or write a visitor's workspace, call an assistant endpoint, or run a model.
 
-## Responsive design and accessibility
+The real application and its honest local-guide disclosures remain unchanged. No provider, account system, database field, dependency or migration was added.
 
-Desktop uses a split demo, horizontal journey navigation and a selectable network. Mobile uses scrolling prompt controls, workspace tabs, a vertical journey and a two-column set of system selectors. Relevant context is communicated in text as well as visual states. Controls use semantic buttons, `aria-pressed`, visible focus, touch-sized targets and live response regions. Mobile navigation supports Escape and restores focus. Every meaning remains available with motion disabled.
+## Accessibility and verification
 
-IntersectionObserver handles section reveals and the journey; no continuously running scroll animation loop or animation dependency is added. The public shell no longer pulls the app's sidebar, assistant or dashboard component graphs into the public demo.
+Fluid typography, mobile reflow, visible keyboard focus, semantic headings, descriptive images, native disclosure controls, readable contrast and reduced-motion behavior are retained. Real screenshots have nearby descriptions; they are not the sole way to understand a feature.
 
-## Brand and availability
+Verification includes TypeScript, lint, production build, copilot regression tests and public dependency-boundary tests. `tests/marketing-browser.cjs` covers 1920, 1440, 1366, 768, 430 and 375 pixel viewports; heading bounds; image loading; personal-data isolation; five Ask Pathly responses; six product views; mobile navigation; anchor destinations; existing entry redirects; and reduced motion.
 
-The official lockup is **Your Path, Made Clear.** Existing logo artwork is retained. Public positioning is healthcare technology and consulting, starting with the journey into healthcare. No treatment, clinical advice, success rate, customer count, credential or admissions guarantee is advertised. Consulting is explicitly in development with no invented contact, booking, pricing or payment flow.
-
-## Verification
-
-`node tests/marketing.cjs` checks fixture consistency, five different question/context combinations, recursive public dependency isolation, forbidden operational copy, removed legacy preview, and truthful consulting/brand language.
-
-`tests/marketing-browser.cjs` runs against a local server. It creates an isolated test browser workspace, visits public pages, and verifies the workspace remains byte-for-byte unchanged. It instruments IndexedDB and requests to verify zero public storage/assistant access. It also checks all prompts, context changes, six product views, six network nodes, journey scroll activation, desktop/mobile layouts, keyboard/touch controls, reduced motion and browser errors.
-
-Use `PATHLY_PLAYWRIGHT_MODULE` for an externally available Playwright module (default `playwright`), `PATHLY_BASE_URL` for the server (default `http://localhost:5174`), and `PATHLY_BROWSER_CHANNEL` for an installed Chromium channel (default `msedge`). Browser evidence is written under ignored `work/`. No browser dependency was added to the application.
-
-Validation also includes TypeScript, ESLint, the existing record/dashboard/personalization/copilot suites, and the production build. Cloudflare rollout must be verified separately against its live URL.
+Run the browser suite against a local dev server, providing `PATHLY_PLAYWRIGHT_MODULE` if Playwright is installed outside the project. Optional `PATHLY_BASE_URL` and `PATHLY_BROWSER_CHANNEL` configure the target and browser.

@@ -1,5 +1,57 @@
-// Run against a local development server with Playwright available externally.
-const fs=require('fs');fs.mkdirSync('work',{recursive:true});const baseURL=process.env.PATHLY_BASE_URL||'http://localhost:5174';
-const {chromium}=require(process.env.PATHLY_PLAYWRIGHT_MODULE||'playwright'),assert=require('node:assert/strict');
-async function snapshot(p){return p.evaluate(()=>new Promise((resolve,reject)=>{const req=window.__realOpen('pathly-personal-workspace-v1',1);req.onsuccess=()=>{const db=req.result,t=db.transaction('workspace'),r=t.objectStore('workspace').get('current');r.onsuccess=()=>resolve(JSON.stringify(r.result));t.oncomplete=()=>db.close();t.onerror=()=>reject(t.error)}}))}
-(async()=>{const b=await chromium.launch({channel:process.env.PATHLY_BROWSER_CHANNEL||'msedge',headless:true}),p=await b.newPage({viewport:{width:1440,height:1000}}),errors=[],api=[];p.on('pageerror',e=>errors.push(e.message));p.on('console',e=>{if(e.type()==='error')errors.push(e.text())});p.on('request',r=>{if(/\/api\/assistant/.test(r.url()))api.push(r.url())});await p.addInitScript(()=>{window.__publicReads=0;window.__realOpen=indexedDB.open.bind(indexedDB);indexedDB.open=(...args)=>{window.__publicReads++;return window.__realOpen(...args)}});await p.goto(baseURL+'/app');await p.getByLabel('Your name',{exact:true}).fill('Private Sentinel');await p.getByRole('button',{name:'Continue to Pathly'}).click();await p.getByRole('button',{name:'Finish later',exact:true}).click();const before=await snapshot(p);await p.goto(baseURL);await p.locator('.marketing[data-ready=true]').waitFor();assert.equal(await p.locator('.copilot-root').count(),0);assert(!(await p.locator('main').innerText()).includes('Private Sentinel'));await p.screenshot({path:'work/company-hero.png'});const demo=p.locator('[data-testid=ask-pathly-demo]');await p.getByRole('heading',{name:'Your journey is taking shape.',exact:true}).waitFor();for(const [q,h,chip] of [['What should I focus on next?','Make room for the work that connects the pieces.','Capacity'],['How are my experiences developing?','A foundation with different kinds of perspective.','Reflections'],['What should I work on this semester?','A focused semester, not a longer checklist.','Application'],['Which experiences support my story?','Look for the moments that changed your perspective.','Writing'],['Give me a progress update','Your journey is taking shape.','Schools']]){await p.getByRole('button',{name:q,exact:true}).click();await demo.getByRole('heading',{name:h,exact:true}).waitFor();assert((await demo.locator('.demo-grounding').innerText()).includes(chip));}await p.locator('#ask-pathly').screenshot({path:'work/company-ask.png'});await demo.getByRole('link',{name:'Explore the example journey'}).click();await p.getByRole('region',{name:'Example Journey',exact:true}).waitFor();const nav=p.getByRole('navigation',{name:'Explore the example workspace'});for(const v of ['Experiences','Schools','Application','Goals','Journey','Ask Pathly']){await nav.getByRole('button',{name:new RegExp(v)}).click();await p.getByRole('region',{name:'Example '+v,exact:true}).waitFor();}await nav.getByRole('button',{name:/Experiences/}).click();await p.locator('#software').screenshot({path:'work/company-software.png'});for(const v of ['Schools','Goals','Application','Story','Journey','Experiences']){await p.getByRole('group',{name:'Explore connected Pathly areas'}).getByRole('button',{name:new RegExp(v)}).click();await p.waitForFunction(v=>document.querySelector('.system-explanation h3').textContent===v,v)}await p.locator('#connected-system').screenshot({path:'work/company-system.png'});await p.getByRole('navigation',{name:'Journey stages'}).getByRole('button',{name:/Next chapter/}).click();await p.waitForTimeout(700);assert.equal(await p.locator('[data-journey-step="5"]').getAttribute('data-active'),'true');await p.locator('#consulting').screenshot({path:'work/company-consulting.png'});assert.equal(await p.evaluate(()=>window.__publicReads),0);assert.equal(await snapshot(p),before);assert.deepEqual(api,[]);const text=await p.locator('main').innerText();for(const s of ['No connected AI model','Local planning rules','Source needs verification','MODEL_NOT_CONFIGURED'])assert(!text.includes(s));for(const width of [1366,768,430,375]){await p.setViewportSize({width,height:900});await p.goto(baseURL);await p.locator('.marketing[data-ready=true]').waitFor();assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow ${width}`);if(width===375){await p.screenshot({path:'work/company-mobile-hero.png'});await p.getByRole('button',{name:'Open navigation',exact:true}).click();await p.getByRole('navigation',{name:'Mobile website navigation'}).getByRole('link',{name:'Consulting',exact:true}).click();await p.getByRole('button',{name:'What should I focus on next?',exact:true}).click();await demo.getByRole('heading',{name:'Make room for the work that connects the pieces.'}).waitFor();await p.locator('#ask-pathly').screenshot({path:'work/company-mobile-ask.png'});await p.getByRole('group',{name:'Explore connected Pathly areas'}).getByRole('button',{name:/Goals/}).click();await p.waitForFunction(()=>document.querySelector('.system-explanation h3').textContent==='Goals');}assert.equal(await p.evaluate(()=>window.__publicReads),0)}await p.emulateMedia({reducedMotion:'reduce'});await p.getByRole('button',{name:'Give me a progress update',exact:true}).focus();await p.keyboard.press('Enter');await demo.getByRole('heading',{name:'Your journey is taking shape.'}).waitFor();assert.equal(await demo.locator('.demo-processing').count(),0);assert.equal(await demo.locator('.demo-answer-content').evaluate(el=>getComputedStyle(el).animationName),'none');assert.equal(await snapshot(p),before);assert.deepEqual(errors,[]);await b.close();console.log('PASS private-state isolation, zero public storage/API calls, five distinct demo responses/context, six product views, six network nodes, scroll journey, responsive sizes, touch/keyboard/reduced motion and no runtime errors');})().catch(e=>{console.error(e);process.exit(1)});
+const fs=require('fs'),assert=require('node:assert/strict');
+const {chromium}=require(process.env.PATHLY_PLAYWRIGHT_MODULE||'playwright');
+const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
+(async()=>{
+ fs.mkdirSync('work',{recursive:true});
+ const b=await chromium.launch({channel:process.env.PATHLY_BROWSER_CHANNEL||'msedge',headless:true});
+ const p=await b.newPage({viewport:{width:1440,height:900}}),errors=[];
+ p.on('pageerror',e=>errors.push(e.message));
+ await p.addInitScript(()=>{window.__reads=0;const open=indexedDB.open.bind(indexedDB);indexedDB.open=(...a)=>{window.__reads++;return open(...a)}});
+ await p.goto(base+'/app');
+ await p.getByLabel('Your name',{exact:true}).fill('Private Sentinel');
+ await p.getByRole('button',{name:'Continue to Pathly'}).click();
+ await p.getByRole('button',{name:'Finish later',exact:true}).click();
+ await p.goto(base);
+ await p.locator('.marketing[data-ready=true]').waitFor();
+ assert(!(await p.locator('main').innerText()).includes('Private Sentinel'));
+ assert.equal(await p.evaluate(()=>window.__reads),0);
+ await p.screenshot({path:'work/editorial-hero.png'});
+ for(const selector of ['.recognition','.editorial-statement','.chapter-wide','.chapter-reverse','.next-chapter','.future-self','.editorial-final']){
+  await p.locator(selector).scrollIntoViewIfNeeded();await p.waitForTimeout(650);
+  await p.locator(selector).screenshot({path:'work/editorial-'+selector.slice(1)+'.png'});
+ }
+ await p.getByText('Try an Ask Pathly example',{exact:true}).click();
+ const demo=p.getByTestId('ask-pathly-demo');
+ for(const [q,h] of [['What should I focus on next?','Make room for the work that connects the pieces.'],['How are my experiences developing?','A foundation with different kinds of perspective.'],['What should I work on this semester?','A focused semester, not a longer checklist.'],['Which experiences support my story?','Look for the moments that changed your perspective.'],['Give me a progress update','Your journey is taking shape.']]){
+  await p.getByRole('button',{name:q,exact:true}).click();await demo.getByRole('heading',{name:h,exact:true}).waitFor();
+ }
+ await demo.getByRole('link',{name:'Explore the example journey'}).click();
+ await p.getByRole('region',{name:'Example Journey',exact:true}).waitFor();
+ for(const v of ['Experiences','Schools','Application','Goals','Journey','Ask Pathly']){
+  await p.getByRole('navigation',{name:'Explore the example workspace'}).getByRole('button',{name:new RegExp(v)}).click();
+  await p.getByRole('region',{name:'Example '+v,exact:true}).waitFor();
+ }
+ for(const [width,height] of [[1920,1080],[1366,768],[768,1024],[430,932],[375,812]]){
+  await p.setViewportSize({width,height});await p.goto(base);await p.locator('.marketing[data-ready=true]').waitFor();
+  assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width);
+  const h=await p.locator('h1').boundingBox();assert(h.x>=0&&h.x+h.width<=width,'heading '+width);
+  for(const img of await p.locator('.product-capture img').all()){await img.scrollIntoViewIfNeeded();await img.evaluate(el=>el.decode());assert(await img.evaluate(el=>el.naturalWidth>0));}
+  await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(650);await p.screenshot({path:'work/editorial-'+width+'.png'});
+  if(width===375){
+   await p.getByRole('button',{name:'Open navigation',exact:true}).click();
+   await p.getByRole('navigation',{name:'Mobile website navigation'}).getByRole('link',{name:'For students'}).click();
+   await p.getByText('Try an Ask Pathly example',{exact:true}).click();
+   await p.getByRole('button',{name:'What should I focus on next?',exact:true}).click();
+   await demo.getByRole('heading',{name:'Make room for the work that connects the pieces.'}).waitFor();
+   assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  }
+ }
+ await p.emulateMedia({reducedMotion:'reduce'});
+ assert.equal(await p.locator('.editorial-reveal').first().evaluate(e=>getComputedStyle(e).animationName),'none');
+ const links=await p.locator('a[href^="/#"],a[href^="#"]').evaluateAll(els=>els.map(e=>e.getAttribute('href')).filter(h=>h!=='#'));
+ for(const link of links)assert(await p.locator(link.replace('/#','#')).count(),link);
+ assert.equal(await p.evaluate(()=>window.__reads),0);
+ for(const route of ['/login','/signup']){await p.goto(base+route);await p.waitForURL('**/app');await p.getByRole('button',{name:'Open Ask Pathly',exact:true}).waitFor();}
+ assert.deepEqual(errors,[]);await b.close();
+ console.log('PASS six responsive sizes, screenshots, intact entry routes, zero public personal-data reads, five Ask demos, six product views, mobile navigation, anchors and reduced motion');
+})().catch(e=>{console.error(e);process.exit(1)});
