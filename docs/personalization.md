@@ -34,6 +34,6 @@ Workspace shape adds optional `conversation` and `milestones` fields; existing r
 
 The copilot remains mounted across workspace navigation, keeping the draft and recent messages. Its open/minimized preference is stored as a boolean in localStorage. Desktop is nonmodal so sidebar navigation remains available; mobile uses the shared modal focus trap and follows the visual viewport. Editing dialogs temporarily hide it without discarding state.
 
-New conversation and confirmed Clear conversation write only the conversation field through the existing transaction service. They do not delete records or reset onboarding. Message action buttons open existing forms for explicit review/save. The public preview uses labeled example records, existing dashboard components, and the same local response service; it never reads or writes personal workspace data.
+New conversation and confirmed Clear conversation write only the conversation field through the existing transaction service. They do not delete records or reset onboarding. Message action buttons open existing forms for explicit review/save. Public demos are now completely separate: authored fixtures and dedicated marketing components do not import dashboard selectors, production assistant services, or personal storage. See `marketing.md` for the boundary and tests.
 
 The Privacy, Terms and Help pages explain current behavior. The Terms page is product-use guidance, not a complete commercial legal agreement; have appropriate launch policies reviewed before offering contractual services.

@@ -1,2 +1,2 @@
-import {MarketingNavbar,MarketingFooter} from './marketing';
+import {MarketingNavbar,MarketingFooter} from './marketing/marketing-shell';
 export default function PublicDocument({title,children}:{title:string;children:React.ReactNode}){return <div className="marketing pathly-light"><MarketingNavbar/><main className="public-document"><span className="eyebrow">PATHLY</span><h1>{title}</h1>{children}<p><a href="/app">Open your Pathly workspace →</a></p></main><MarketingFooter/></div>}
