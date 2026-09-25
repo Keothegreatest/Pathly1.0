@@ -11,3 +11,8 @@ inspect(path.join(__dirname,'../app/marketing.tsx'));inspect(path.join(__dirname
 const combined=[...seen].map(f=>fs.readFileSync(f,'utf8')).join('\n');for(const term of ['Local planning rules','No connected AI model','Source needs verification','MODEL_NOT_CONFIGURED','Missing · Required','A clearer next step, at every stage.'])assert(!combined.includes(term),term+' leaked into marketing');
 assert(combined.includes('Your Path, Made Clear.'));assert(combined.includes('No account required'));assert(!fs.existsSync(path.join(__dirname,'../app/marketing-preview.tsx')));
 console.log('PASS curated demo consistency, distinct prompts/context, public dependency isolation, no storage/provider calls, technical-copy exclusion and storage disclosure and brand honesty');
+
+assert(combined.includes('One place to know where you stand.'));
+assert(combined.includes('Pathly brings it all together.'));
+assert(combined.includes('Before Pathly'));
+assert(!combined.includes('Planning support. Always your decisions.'));

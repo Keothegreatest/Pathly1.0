@@ -15,8 +15,15 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
  await p.locator('.marketing[data-ready=true]').waitFor();
  assert(!(await p.locator('main').innerText()).includes('Private Sentinel'));
  assert.equal(await p.evaluate(()=>window.__reads),0);
+ assert.equal(await p.getByRole('link',{name:'Sign in',exact:true}).count(),0);
+ assert(!(await p.locator('footer.marketing-footer').innerText()).includes('Planning support. Always your decisions.'));
+ assert(await p.locator('#for-students').evaluate(e=>e.nextElementSibling?.id==='how-it-works'));
+ await p.getByRole('link',{name:'Explore an example workspace',exact:true}).click();
+ await p.getByRole('region',{name:'Example Experiences',exact:true}).waitFor();
+ await p.locator('#software > summary').click();
+ await p.evaluate(()=>scrollTo(0,0));
  await p.screenshot({path:'work/editorial-hero.png'});
- for(const selector of ['.recognition','.editorial-statement','.chapter-wide','.chapter-reverse','.next-chapter','.future-self','.editorial-final']){
+ for(const selector of ['.recognition','.clarity-benefits','.connected-journey','.chapter-wide','.chapter-reverse','.next-chapter','.workspace-comparison','.editorial-final']){
   await p.locator(selector).scrollIntoViewIfNeeded();await p.waitForTimeout(650);
   await p.locator(selector).screenshot({path:'work/editorial-'+selector.slice(1)+'.png'});
  }

@@ -32,3 +32,13 @@ Fluid typography, mobile reflow, visible keyboard focus, semantic headings, desc
 Verification includes TypeScript, lint, production build, copilot regression tests and public dependency-boundary tests. `tests/marketing-browser.cjs` covers 1920, 1440, 1366, 768, 430 and 375 pixel viewports; heading bounds; image loading; personal-data isolation; five Ask Pathly responses; six product views; mobile navigation; anchor destinations; existing entry redirects; and reduced motion.
 
 Run the browser suite against a local dev server, providing `PATHLY_PLAYWRIGHT_MODULE` if Playwright is installed outside the project. Optional `PATHLY_BASE_URL` and `PATHLY_BROWSER_CHANNEL` configure the target and browser.
+
+## Conversion refinement
+
+The dashboard reveal now follows the recognition section immediately. The homepage adds a question-led “Less guessing” section, a six-stage connected journey, a before/after workspace comparison, and stronger evidence-based Next Best Actions copy. Existing product captures and interactive demos are reused.
+
+Public sign-in links and the two closing footer sentences were removed; login/signup routes remain unchanged. Primary CTAs now consistently use “Get started.” The final example link opens the existing example disclosure before navigating to it.
+
+The new sections live in `app/marketing/journey-benefits.tsx`, with responsive styling in `app/editorial.css`. On mobile, the journey becomes vertical and the comparison stacks. No app logic, database schema, dependency, payment flow, or screenshot data changed.
+
+Assumption: existing `/signup` remains the correct entry point, even though this version starts a browser-local workspace without authentication. Later, validate the order and wording with real pre-health students; do not add fabricated social proof or make unsupported claims.
