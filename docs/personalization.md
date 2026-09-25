@@ -13,7 +13,8 @@ The shipped assistant is an explicitly labeled **local, deterministic planning g
 - `assistant-context.ts`: structured context from the current workspace; scoped context helper for a future provider.
 - `assistant-service.ts`: understandable local intent/rule handling and factual responses.
 - `assistant-types.ts`: typed messages and proposed destinations.
-- `ask-pathly.tsx`: accessible conversation UI and explicit review actions.
+- `ask-pathly-copilot.tsx` and `copilot-parts.tsx`: persistent floating conversation UI, accessible controls and explicit review actions.
+- `copilot-context.ts`: page-aware prompts, selected-recommendation explanations and the local message service boundary.
 - `lib/assistant/provider.ts`: isolated server-side provider interface; currently returns no provider.
 - `/api/assistant`: returns 503 while unconfigured and fails closed if a provider is added without an access policy.
 
@@ -26,3 +27,13 @@ Before enabling generative AI, implement a real server-side provider, secret man
 Workspace shape adds optional `conversation` and `milestones` fields; existing records remain intact. Profile fields are additive. Data is browser/origin-local, not account-level or cross-device storage. Clearing site data removes it. The existing journey export exports records, not assistant history or milestone receipts.
 
 `tests/personalization.cjs` covers medicine, PA and dental profiles, capacity, missing data, validation, recommendation ordering, goal acceptance, live targets and milestone crossings. Existing record-integrity, dashboard-state and workspace-intelligence suites remain applicable. Browser checks cover nine-step completion, refresh/resume, deferred and legacy onboarding, explicit goal review, persistent conversation, mobile bounds, reduced motion and the disabled model endpoint.
+
+## Public website and copilot
+
+`/` is now the public website; `/app` contains the existing name-based workspace. `/login` and `/signup` redirect to `/app` because this version intentionally has no accounts. Old `/?view=…&tab=…` bookmarks redirect to their `/app` equivalents. IndexedDB is origin-scoped, so changing the path preserves saved data.
+
+The copilot remains mounted across workspace navigation, keeping the draft and recent messages. Its open/minimized preference is stored as a boolean in localStorage. Desktop is nonmodal so sidebar navigation remains available; mobile uses the shared modal focus trap and follows the visual viewport. Editing dialogs temporarily hide it without discarding state.
+
+New conversation and confirmed Clear conversation write only the conversation field through the existing transaction service. They do not delete records or reset onboarding. Message action buttons open existing forms for explicit review/save. The public preview uses labeled example records, existing dashboard components, and the same local response service; it never reads or writes personal workspace data.
+
+The Privacy, Terms and Help pages explain current behavior. The Terms page is product-use guidance, not a complete commercial legal agreement; have appropriate launch policies reviewed before offering contractual services.

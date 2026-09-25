@@ -1,7 +1,7 @@
 /* Light working surfaces are scoped to main; sidebar, loading, and tour retain their identity. */
 :root {--workspace-background:#f5f3ec;}
 html:has(.main),body:has(.main) {background:var(--workspace-background);}
-.main {
+.main,.pathly-light {
   color-scheme:light;
   --background:var(--workspace-background);
   --foreground:#23372c;

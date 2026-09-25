@@ -1,0 +1,21 @@
+const fs=require('fs'),ts=require('typescript'),assert=require('node:assert/strict');
+require.extensions['.ts']=(m,p)=>m._compile(ts.transpileModule(fs.readFileSync(p,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,p);
+const {getCopilotContext,sendAskPathlyMessage,explainRecommendation}=require('../app/copilot-context.ts');
+const {workspaceRoute}=require('../app/workspace-route.ts');
+const record={id:'e',kind:'experience',version:1,updated:new Date().toISOString(),data:{title:'Clinic',hours:'80',category:'Clinical Experience'}};
+const original=JSON.stringify(record);
+for(const page of ['Home','Experiences','Schools','Application','Goals','Journey','Profile'])assert.equal(getCopilotContext(page).prompts.length,3);
+assert.notDeepEqual(getCopilotContext('Schools').prompts,getCopilotContext('Experiences').prompts);
+assert.equal(getCopilotContext('Unknown').label,'Home');
+const response=sendAskPathlyMessage('Which experiences need stronger reflections?',[record],'Experiences');
+assert(response.text.includes('Clinic'));assert(response.actions.some(a=>a.destination.data?.experience==='e'||a.destination.record?.id==='e'));
+assert.equal(JSON.stringify(record),original);
+assert(sendAskPathlyMessage('Where are my biggest gaps?',[],'Home').text.includes('Missing documentation does not necessarily mean missing experience'));
+assert(sendAskPathlyMessage('Where am I missing prerequisites?',[],'Schools').text.includes('0 saved school'));
+const action={id:'a',title:'Review your goal',reason:'You chose it.',evidence:'Target date tomorrow.',label:'Update goal',priority:93,tone:'attention',destination:{page:'Goals'}};
+const explanation=explainRecommendation(action);assert(explanation.text.includes(action.reason));assert(explanation.text.includes(action.evidence));assert.deepEqual(explanation.actions[0].destination,action.destination);
+assert.deepEqual(workspaceRoute('?view=Experiences&tab=timeline'),{page:'Experiences',tab:'timeline'});
+assert.equal(workspaceRoute('?view=invalid').page,'Home');
+console.log('PASS contextual prompts, evidence-backed explanations/actions, missing-data honesty, no record mutation and legacy route parsing');
+
+const {resolveCopilotAction}=require('../app/copilot-context.ts');const newer={...record,version:2};assert.equal(resolveCopilotAction({page:'Experiences',record},[newer]).record.version,2);assert.equal(resolveCopilotAction({page:'Experiences',record},[]),null);assert.equal(resolveCopilotAction({page:'Experiences',kind:'reflection',data:{experience:'deleted'}},[]),null);

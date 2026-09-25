@@ -1,3 +1,5 @@
+@import './copilot.css';
+@import './marketing.css';
 @import './personalization.css';
 @import "tailwindcss";
 @import "tw-animate-css";

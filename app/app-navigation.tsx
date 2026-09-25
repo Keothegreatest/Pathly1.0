@@ -19,11 +19,11 @@ export const navigation = [
   ['Goals', Flag],
 ] as const;
 
-export function PathlyBrand({ compact = false, onHome }: { compact?: boolean; onHome: () => void }) {
+export function PathlyBrand({ compact = false, onHome, href = "/app" }: { compact?: boolean; onHome: () => void; href?: string }) {
   return (
     <Link
       className={`pathly-brand${compact ? ' pathly-brand--compact' : ''}`}
-      href="/"
+      href={href}
       aria-label="Pathly home"
       onClick={(event) => { event.preventDefault(); onHome(); }}
     >

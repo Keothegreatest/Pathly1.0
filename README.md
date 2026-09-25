@@ -19,6 +19,7 @@ node tests/record-integrity.cjs
 node tests/dashboard-state.cjs
 node tests/workspace-intelligence.cjs
 node tests/personalization.cjs
+node tests/copilot.cjs
 npm run build
 ```
 
@@ -29,3 +30,5 @@ The browser storage service uses atomic IndexedDB transactions, record versions,
 New workspaces can complete a resumable nine-question assessment. Home adapts to selected priorities and capacity, suggested goals require explicit acceptance, and hour targets use documented experience totals. Returning users can open **Your Pathly plan** from the profile menu.
 
 **Ask Pathly is a local rules-based planning guide, not a connected language model.** Conversation history stays in this browser; proposed changes open existing editors for review. See [personalization architecture and provider requirements](docs/personalization.md) before enabling generative AI.
+
+The public product website is at `/`; open the workspace at `/app`. Legacy workspace query links and `/login` / `/signup` redirect into the name-based entry flow. Ask Pathly is a global floating panel inside the workspace, with page-aware prompts, recommendation explanations, and conversation-only reset controls. Public previews use clearly labeled illustrative records and never save them to a visitor’s workspace.
