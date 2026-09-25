@@ -22,8 +22,21 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
  await p.getByRole('region',{name:'Example Experiences',exact:true}).waitFor();
  await p.locator('#software > summary').click();
  await p.evaluate(()=>scrollTo(0,0));
+
+ const hero=p.locator('.scroll-hero');
+ await p.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.scroll-hero')).getPropertyValue('--story-progress'))<.03);
+ const startProgress=await hero.evaluate(e=>Number(getComputedStyle(e).getPropertyValue('--story-progress')));
+ await p.evaluate(()=>scrollTo(0,450));await p.waitForTimeout(100);
+ assert(await hero.evaluate(e=>Number(getComputedStyle(e).getPropertyValue('--story-progress')))>startProgress,'hero responds to scroll');
+ for(let i=0;i<6;i++){
+  await p.locator('[data-tour-step="'+i+'"]').evaluate(e=>e.scrollIntoView({block:'center'}));
+  await p.waitForFunction(i=>document.querySelector('[data-tour-step="'+i+'"]').getAttribute('data-active')==='true',i);
+ }
+ await p.getByRole('button',{name:'Application readiness',exact:true}).focus();
+ assert.equal(await p.getByRole('button',{name:'Application readiness',exact:true}).getAttribute('aria-pressed'),'true');
+ await p.evaluate(()=>scrollTo(0,0));
  await p.screenshot({path:'work/editorial-hero.png'});
- for(const selector of ['.recognition','.clarity-benefits','.connected-journey','.chapter-wide','.chapter-reverse','.next-chapter','.workspace-comparison','.editorial-final']){
+ for(const selector of ['.recognition','.clarity-benefits','.connected-journey','.chapter-wide','.scroll-product-tour','.pathly-purpose','.next-chapter','.workspace-comparison','.editorial-final']){
   await p.locator(selector).scrollIntoViewIfNeeded();await p.waitForTimeout(650);
   await p.locator(selector).screenshot({path:'work/editorial-'+selector.slice(1)+'.png'});
  }
@@ -42,7 +55,7 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
   await p.setViewportSize({width,height});await p.goto(base);await p.locator('.marketing[data-ready=true]').waitFor();
   assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width);
   const h=await p.locator('h1').boundingBox();assert(h.x>=0&&h.x+h.width<=width,'heading '+width);
-  for(const img of await p.locator('.product-capture img').all()){await img.scrollIntoViewIfNeeded();await img.evaluate(el=>el.decode());assert(await img.evaluate(el=>el.naturalWidth>0));}
+  for(const img of await p.locator('.product-capture img:visible').all()){await img.scrollIntoViewIfNeeded();await img.evaluate(el=>el.decode());assert(await img.evaluate(el=>el.naturalWidth>0));}
   await p.evaluate(()=>scrollTo(0,0));await p.waitForTimeout(650);await p.screenshot({path:'work/editorial-'+width+'.png'});
   if(width===375){
    await p.getByRole('button',{name:'Open navigation',exact:true}).click();
@@ -53,12 +66,17 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
    assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }
  }
+ await p.setViewportSize({width:1440,height:900});
+ await p.waitForFunction(()=>document.querySelector('.marketing').dataset.motion==='scroll');
  await p.emulateMedia({reducedMotion:'reduce'});
+ await p.waitForFunction(()=>document.querySelector('.marketing').dataset.motion==='still');
  assert.equal(await p.locator('.editorial-reveal').first().evaluate(e=>getComputedStyle(e).animationName),'none');
+ assert.equal(await p.locator('.marketing').getAttribute('data-motion'),'still');
+ assert.equal(await p.locator('.tour-sticky').isVisible(),false);
  const links=await p.locator('a[href^="/#"],a[href^="#"]').evaluateAll(els=>els.map(e=>e.getAttribute('href')).filter(h=>h!=='#'));
  for(const link of links)assert(await p.locator(link.replace('/#','#')).count(),link);
  assert.equal(await p.evaluate(()=>window.__reads),0);
  for(const route of ['/login','/signup']){await p.goto(base+route);await p.waitForURL('**/app');await p.getByRole('button',{name:'Open Ask Pathly',exact:true}).waitFor();}
  assert.deepEqual(errors,[]);await b.close();
- console.log('PASS six responsive sizes, screenshots, intact entry routes, zero public personal-data reads, five Ask demos, six product views, mobile navigation, anchors and reduced motion');
+ console.log('PASS six responsive sizes, screenshots, intact entry routes, zero public personal-data reads, five Ask demos, six product views, mobile navigation, anchors, scroll-driven hero/tour, keyboard callouts and desktop reduced motion');
 })().catch(e=>{console.error(e);process.exit(1)});

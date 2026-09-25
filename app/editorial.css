@@ -101,8 +101,8 @@
 .editorial-footer nav h2{font-family:inherit;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--company-sage);margin:0 0 7px}
 .editorial-footer nav a{font-size:12px;line-height:1.7}
 
-.editorial-reveal{animation:company-reveal 600ms ease both;animation-play-state:paused}
-.editorial-reveal[data-entered=true]{animation-play-state:running}
+.editorial-reveal{animation:none}
+.editorial-reveal[data-entered=true]{animation:company-reveal 600ms ease both}
 @media(max-width:1050px){
  .editorial-hero-bottom{display:block;padding-bottom:55px}.editorial-hero-bottom .editorial-actions{margin-top:26px}
  .chapter-composition{gap:35px;grid-template-columns:1fr 1fr}.chapter-wide .chapter-copy{gap:35px}.next-chapter-grid{gap:45px}

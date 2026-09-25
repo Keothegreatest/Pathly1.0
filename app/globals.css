@@ -13,6 +13,7 @@
 @import "./home-dashboard.css";
 @import "./connected-workspace.css";
 @import "./editorial.css";
+@import "./scroll-story.css";
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -42,3 +42,22 @@ Public sign-in links and the two closing footer sentences were removed; login/si
 The new sections live in `app/marketing/journey-benefits.tsx`, with responsive styling in `app/editorial.css`. On mobile, the journey becomes vertical and the comparison stacks. No app logic, database schema, dependency, payment flow, or screenshot data changed.
 
 Assumption: existing `/signup` remains the correct entry point, even though this version starts a browser-local workspace without authentication. Later, validate the order and wording with real pre-health students; do not add fabricated social proof or make unsupported claims.
+
+## Interactive product narrative
+
+The public homepage now has two intentional sticky moments on desktop: workflow fragments resolving into the real Home interface, and a six-step product tour whose current image follows the visible story. No wheel/touch events are captured and scrolling is never locked. Existing navigation, routes, assistant logic and workspace data are unchanged.
+
+- `scroll-hero.tsx` introduces the pre-health problem and reuses `WorkflowFragments` in recognition.
+- `use-scroll-narrative.ts` coordinates scene progress with one passive scroll listener, IntersectionObserver visibility tracking, and at most one queued animation frame. DOM reads are batched before style writes; React does not render per scroll frame. Observers/listeners are cleaned up.
+- `product-reveal.tsx` provides the large Home reveal and hover/focus/touch callouts. Descriptions remain available without hover.
+- `scroll-product-tour.tsx` pairs Experiences, Schools, Reflections, Goals, Application and Next Best Actions with actual interface captures. Buttons provide direct keyboard-accessible navigation as an alternative to scrolling.
+- `pathly-purpose.tsx` explains why the product exists and names pre-health pathways without claiming a verified requirements database.
+- `scroll-story.css` scopes transforms, opacity, responsive compositions and reduced-motion fallbacks.
+
+The comparison is explicitly an illustrative workflow, not a testimonial. No adoption numbers, admissions outcomes, generative AI claims or student endorsements were added.
+
+Schools, reflections and goals now have real interface captures from the same isolated fictional record setup. The smaller product captures were re-exported at double pixel density as lossless WebP for clearer large previews. No live records are loaded on the public page.
+
+Below 1000px or with reduced motion, the tour is unpinned and each story displays its own image. Scroll-scrubbed transforms are disabled; content remains readable. Motion preference changes are handled during the session. Static content also remains visible before enhancement.
+
+Browser regression checks now include hero progress changing with scroll, all six active tour steps, keyboard dashboard callouts and switching desktop to reduced motion, alongside the previous responsive, routing, demo and storage-isolation checks.
