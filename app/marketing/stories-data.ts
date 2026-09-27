@@ -1,7 +1,8 @@
-export const programs = ['MD', 'DO', 'PA', 'Dental'] as const;
+import {pathways,normalizeStoryProgram,matchesStoryProgram,type StoryProgram} from '../pathways';
+export const programs = pathways.map(p=>p.label);
 export const applicantTypes = ['Traditional', 'Nontraditional', 'First-generation', 'Career changer', 'Gap year applicant'] as const;
-export const profileTags = ['Research-focused', 'Clinical-heavy', 'Service-heavy', 'Strong academics', 'High patient-care hours', 'Leadership-focused'] as const;
-export type Program = typeof programs[number];
+export const profileTags = ['Research-focused', 'Clinical-heavy', 'Service-heavy', 'Strong academics', 'High patient-care hours', 'Leadership-focused', 'Building academics', 'Early exploration', 'Observation diversity', 'Deadline planning'] as const;
+export type Program = StoryProgram;
 export type StoryFilters = {program: string; applicant: string; profiles: string[]};
 export const emptyFilters: StoryFilters = {program: '', applicant: '', profiles: []};
 export const slug = (value: string) => value.toLowerCase().replaceAll(' ', '-');
@@ -49,20 +50,56 @@ export const studentStories: StudentStory[] = [
  actions:['Organize nine core experiences and 760 clinical hours.','Complete five missing reflections.','Research program missions and verify prerequisites and secondary deadlines.'],
  before:['Clinical work without full context','Five reflections missing','Program differences scattered across tabs'],after:['Nine core experiences organized','Clinical and shadowing lessons recorded','School-specific requirements ready to review'],
  quote:'I was comparing myself to applicants aiming for completely different programs. Pathly helped me focus on what actually mattered for the schools I was considering.',outcome:'In this fictional scenario, Jordan receives offers from two DO programs, including one he had considered a reach.',features:['Reflections','School planning','Goals']},
+ {id:'alex-c',name:'Alex C.',major:'Kinesiology major',program:'PT',applicants:['Traditional'],profiles:['Observation diversity','Deadline planning'],verified:false,
+ headline:'Different settings. A broader perspective.',goal:'Physical therapy programs',metrics:[['GPA','3.54'],['Observation hours','92'],['Settings observed','1']],
+ starting:'Alex had observed outpatient rehabilitation regularly but kept comparing hour totals rather than reviewing what each program actually requested.',
+ insight:'His notes represented only one setting. Reviewing saved program requirements could clarify whether additional observation settings or documentation were needed.',
+ actions:['Organize observation dates, settings, and supervisor details.','Verify each program’s observation requirements at the source.','Set a goal to explore another setting if relevant to his chosen programs.'],before:['Observation hours in a single total','Program requirements not compared','Questions about different settings left unwritten'],after:['Observation setting documented','Requirements reviewed individually','Questions and next steps organized'],
+ quote:'I could see what I had learned—and what I still wanted to understand.',outcome:'In this fictional scenario, Alex enters application preparation with documented observation records and a plan to verify remaining requirements.',features:['Experiences','School requirements','Goals']},
+ {id:'samira-l',name:'Samira L.',major:'Psychology major',program:'OT',applicants:['Traditional','First-generation'],profiles:['Leadership-focused'],verified:false,
+ headline:'The details were the part worth keeping.',goal:'Occupational therapy programs',metrics:[['GPA','3.62'],['Observation hours','65'],['Community service hours','220']],
+ starting:'Samira supported an adaptive recreation program and observed occupational therapists. Her records listed hours but little about her role or what she learned.',
+ insight:'Connecting specific responsibilities and reflections to each experience made the records more useful than one combined activity summary.',
+ actions:['Separate observation and volunteer roles.','Record lessons about participation, access, and teamwork without identifying patient details.','Link meaningful moments to their original experiences.'],before:['Different roles grouped together','Lessons remembered but not written','No clear source for activity examples'],after:['Roles and dates organized','Reflections attached to experiences','Examples ready to revisit for writing'],
+ quote:'I didn’t need a perfect essay. I needed a place to remember the small things.',outcome:'In this fictional scenario, Samira prepares an organized set of activity records and reflections to use during application writing.',features:['Experiences','Reflections','Story moments']},
+ {id:'elena-v',name:'Elena V.',major:'Career changer',program:'Nursing',applicants:['Nontraditional','Career changer'],profiles:['Deadline planning'],verified:false,
+ headline:'One deadline, with the pieces in view.',goal:'An accelerated nursing program',metrics:[['GPA','3.42'],['Prerequisites documented','6 of 8'],['Healthcare volunteer hours','120']],
+ starting:'Elena was balancing work with prerequisite courses. An approaching application deadline made it difficult to distinguish completed work from missing documentation.',
+ insight:'Her personal checklist separated courses still in progress from requirements that simply needed verification. Program rules and transcript timing still required confirmation.',
+ actions:['Record completed and in-progress prerequisites.','Check transcript timing and requirements on the program website.','Add individual tasks for remaining documents and deadlines.'],before:['Course and document tasks mixed together','Deadline saved in email','Unclear transcript timing'],after:['Prerequisite status recorded','Deadline connected to tasks','Questions ready for the program office'],
+ quote:'Seeing the remaining pieces together made planning my week much simpler.',outcome:'In this fictional scenario, Elena has a clear submission checklist and knows which timing questions to confirm with the program.',features:['School requirements','Application tasks','Goals']},
+ {id:'noah-b',name:'Noah B.',major:'First-year college student',program:'Pre-Nursing',applicants:['Traditional','First-generation'],profiles:['Early exploration','Building academics'],verified:false,
+ headline:'A starting point, not a finished plan.',goal:'Explore nursing pathways and prerequisite options',metrics:[['GPA','3.30'],['Prerequisites documented','2 of 7'],['Volunteer hours','28']],
+ starting:'Noah was early in college and did not yet know which nursing program he would pursue. Advice and course notes were scattered across messages.',
+ insight:'He could begin with completed coursework and one volunteer experience without claiming to have a complete application plan. His seven-item checklist was personal, not a universal nursing requirement.',
+ actions:['Add the volunteer experience he already had.','Save programs to research with an advisor.','Record questions about prerequisite sequences and transfer policies.'],before:['Course questions in messages','Volunteer details kept from memory','No single place for program notes'],after:['First experience documented','Program research started','A short list of questions for advising'],
+ quote:'I could start with what I knew and leave room for what I hadn’t figured out.',outcome:'In this fictional scenario, Noah leaves his first planning session with an organized starting point and one manageable research goal.',features:['Experiences','School planning','Goals']},
+ {id:'grace-w',name:'Grace W.',major:'Post-baccalaureate student',program:'DO',applicants:['Nontraditional','Gap year applicant'],profiles:['Building academics','Clinical-heavy'],verified:false,
+ headline:'An academic trend deserves context.',goal:'Review DO program prerequisites and application timing',metrics:[['Cumulative GPA','3.28'],['Recent coursework GPA','3.72'],['Clinical hours','680']],
+ starting:'Grace had returned to coursework after several years working. A cumulative GPA alone did not help her organize her recent classes or explain the timing of her experiences.',
+ insight:'Keeping recent coursework notes, program policies, and longitudinal clinical experiences together helped her prepare specific questions for an advisor. Pathly did not assess her chances.',
+ actions:['Record academic context and questions in school notes.','Verify prerequisite recency policies for saved programs.','Organize clinical responsibilities and reflections across dates.'],before:['Coursework context scattered','Prerequisite policies unverified','Clinical roles missing dates'],after:['Questions organized for advising','Program policies ready to verify','A clearer experience timeline'],
+ quote:'I stopped asking one number to explain my whole journey.',outcome:'In this fictional scenario, Grace reviews her timeline with an advisor using organized coursework notes and program-specific questions.',features:['School notes','Experiences','Reflections']},
+ {id:'luis-a',name:'Luis A.',major:'Biochemistry major',program:'MD',applicants:['Traditional'],profiles:['Research-focused','Early exploration'],verified:false,
+ headline:'Room to explore beyond the laboratory.',goal:'Build a thoughtful plan before choosing MD programs',metrics:[['GPA','3.91'],['Research hours','520'],['Clinical hours','24']],
+ starting:'Luis enjoyed research and had limited clinical exposure. He wanted to understand patient-facing work without treating new activities as boxes to collect.',
+ insight:'His saved records showed a research-centered journey. A self-defined exploration goal could help him learn more about clinical work and service, without inventing an hours benchmark.',
+ actions:['Capture what research had taught him.','Set a manageable goal to explore patient-facing opportunities.','Record questions and reflections before deciding on longer commitments.'],before:['Research documented mainly as hours','Clinical questions left vague','No small exploration goal'],after:['Research lessons preserved','A realistic exploration goal','Questions to revisit after new experiences'],
+ quote:'My next step could be about learning, not just adding another line.',outcome:'In this fictional scenario, Luis begins a manageable exploration plan alongside his research and coursework.',features:['Reflections','Goals','Experiences']},
 ];
 export function parseStoryFilters(params: Pick<URLSearchParams,'get'|'getAll'>): StoryFilters {
  const program=params.get('program')||'', applicant=params.get('applicant')||'';
- return {program:programs.some(p=>slug(p)===program)?program:'',applicant:applicantTypes.some(a=>slug(a)===applicant)?applicant:'',profiles:[...new Set(params.getAll('profile'))].filter(p=>profileTags.some(t=>slug(t)===p))};
+ return {program:normalizeStoryProgram(program),applicant:applicantTypes.some(a=>slug(a)===applicant)?applicant:'',profiles:[...new Set(params.getAll('profile'))].filter(p=>profileTags.some(t=>slug(t)===p))};
 }
 export function storyQuery(filters: StoryFilters) {
  const params=new URLSearchParams();
- if(filters.program)params.set('program',filters.program);
+ if(normalizeStoryProgram(filters.program))params.set('program',normalizeStoryProgram(filters.program));
  if(filters.applicant)params.set('applicant',filters.applicant);
  filters.profiles.forEach(p=>params.append('profile',p));
  return params.toString();
 }
 export function filterStories(filters: StoryFilters) {
- return studentStories.filter(s=>(!filters.program||slug(s.program)===filters.program)&&(!filters.applicant||s.applicants.some(a=>slug(a)===filters.applicant))&&filters.profiles.every(p=>s.profiles.some(t=>slug(t)===p)));
+ return studentStories.filter(s=>matchesStoryProgram(s.program,normalizeStoryProgram(filters.program))&&(!filters.applicant||s.applicants.some(a=>slug(a)===filters.applicant))&&filters.profiles.every(p=>s.profiles.some(t=>slug(t)===p)));
 }
 export function relatedStories(story: StudentStory) {
  const score=(s:StudentStory)=>(s.program===story.program?10:0)+s.applicants.filter(a=>story.applicants.includes(a)).length*3+s.profiles.filter(p=>story.profiles.includes(p)).length;

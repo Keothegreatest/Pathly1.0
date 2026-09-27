@@ -4,6 +4,7 @@ import {Dialog,DialogContent,DialogTitle,DialogDescription} from '@/components/u
 import {AlertDialog,AlertDialogContent,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel,AlertDialogAction} from '@/components/ui/alert-dialog';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {Checkbox} from '@/components/ui/checkbox';
+import {normalizeProfilePathway} from './pathways';
 import {Entry,fields,Field} from './model';
 import {taskStatus,letterStatus} from './record-links';
 export function Choice({value,onChange,options,label}:{value:string;onChange:(v:string)=>void;options:{value:string;label:string}[];label:string}){
@@ -13,7 +14,7 @@ const basicCount:Record<string,number>={experience:8,school:7,story:6,reflection
 const moreLabels:Record<string,string>={experience:'Contribution, impact & application notes',school:'Requirements, program details & verification',story:'People, themes & application connections',goal:'Connected progress, baseline & notes',letter:'Request planning & relationship details',essay:'Outline & themes',requirement:'Evidence & notes'};
 export default function Editor({entry,records,onClose,onSave,onDelete}:{entry:Entry|null;records:Entry[];onClose:()=>void;onSave:(entry:Entry)=>Promise<void>;onDelete:(entry:Entry)=>Promise<void>}){
  const submitting=useRef(false);
- const [data,setData]=useState<Record<string,string>>(()=>entry?{...entry.data,...(entry.kind==='task'?{status:taskStatus(entry)}:entry.kind==='letter'?{status:letterStatus(entry)}:{})}:{}),[error,setError]=useState(''),[saving,setSaving]=useState(false),[discard,setDiscard]=useState(false),[deleting,setDeleting]=useState(false);
+ const [data,setData]=useState<Record<string,string>>(()=>entry?{...entry.data,...(entry.kind==='profile'?{pathway:normalizeProfilePathway(entry.data.pathway||'')}:{}),...(entry.kind==='task'?{status:taskStatus(entry)}:entry.kind==='letter'?{status:letterStatus(entry)}:{})}:{}),[error,setError]=useState(''),[saving,setSaving]=useState(false),[discard,setDiscard]=useState(false),[deleting,setDeleting]=useState(false);
 
  const dirty=!!entry&&JSON.stringify(data)!==JSON.stringify(entry.data);
  useEffect(()=>{if(!dirty)return;const warn=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue=''};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn)},[dirty]);

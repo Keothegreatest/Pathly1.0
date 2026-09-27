@@ -64,7 +64,7 @@ Browser regression checks now include hero progress changing with scroll, all si
 
 ## Student Stories
 
-`/stories` and `/stories/[id]` are public marketing routes. The shared `student-stories.tsx` collection also powers the homepage preview; `stories-data.ts` owns the five fictional examples, program/applicant/profile taxonomy, URL parsing, filtering, and deterministic related-story ranking. No workspace records, API calls, or database changes are involved.
+`/stories` and `/stories/[id]` are public marketing routes. The shared `student-stories.tsx` collection also powers the homepage preview; `stories-data.ts` owns the eleven fictional examples, program/applicant/profile taxonomy, URL parsing, filtering, and deterministic related-story ranking. No workspace records, API calls, or database changes are involved.
 
 Filters use AND across program, applicant type, and every selected profile characteristic. Unknown query values are ignored. Query-only native history updates keep controls immediate without server requests; the URL remains the directory's source of truth and supports refresh and back/forward. Homepage preview state is local, then preserved in its directory and detail links. Detail pages retain filters in the return link.
 
@@ -73,3 +73,18 @@ All examples have `verified: false`. Page-level disclosures, card labels, quotes
 Program buttons use pressed states and a checkmark, native labeled select/checkbox controls support keyboard input, results counts are announced politely, no-match states offer a reset, and transitions respect reduced motion. Controls wait for hydration before accepting edits. `StoryCollection.onChange` centralizes filter/reset interactions; story links are centralized in `StoryCard`, so future analytics can be wired there without introducing a tracking dependency today.
 
 Validation: `node tests/stories.cjs`; `node tests/stories-browser.cjs` with PATHLY_PLAYWRIGHT_MODULE set if needed. Browser coverage includes homepage-to-directory-to-detail, history, refresh, all programs, combined filters, no matches, invalid parameters/routes, keyboard input, reduced motion, mobile navigation, six viewport widths, and zero private IndexedDB access.
+
+
+## Focused repair pass: production story links and pathway coverage
+
+The production bundle's vinext Link shim threw `TypeError: d is not a function` during RSC prefetch and `e is not a function` on click. Direct server-rendered story URLs worked. Public marketing links now share `public-link.tsx`, a semantic native anchor, so navigation does not depend on the failing client RSC handler. The existing `/stories/[id]` template, query-preserving return link, and not-found route remain in place. Headline links and read links use the same slug; filters still update immediately without reloads.
+
+`app/pathways.ts` owns grouped story filters and workspace profession/profile/school options. Legacy `program=md` and `program=do` URLs resolve to the combined MD/DO group. MD/DO records remain distinct internally. PT, OT, Nursing, Pre-Nursing, and Dental have examples; Pharmacy and Other remain available in workspace forms. Legacy `Pre-nursing` profile values are normalized for display/editing without a database migration.
+
+The library now has eleven fictional examples. Added Alex (PT observation settings), Samira (OT documentation), Elena (Nursing deadlines), Noah (Pre-Nursing exploration), Grace (DO academic context), and Luis (MD clinical exploration). New examples emphasize preparation outcomes rather than fabricated admissions success.
+
+Dashboard recommendation rows now have a single number/content structure and a separate wrapping control row. Height-specific compression overrides were removed. Readiness starts the secondary column; below 1200px the columns stack. The planning CTA is primary and quick actions have consistent targets. No recommendation logic or stored records changed.
+
+The non-product fragment destination was a text-only placeholder, particularly visible after reduced-motion/mobile styles hid its fragments. Recognition now uses a permanent four-step `WorkflowSequence`; the real product animation remains in the hero. No orphaned workflow caption remains.
+
+Production browser checks: all eleven read links, direct reload and browser back, every pathway, filters and retained URLs, keyboard/reduced motion, populated dashboard actions and long titles, Pre-Nursing persistence, readiness, workflow and responsive widths. `tests/qa-repair-browser.cjs` uses isolated fictional records in a fresh browser context.

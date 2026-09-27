@@ -11,3 +11,7 @@ const proposed=answerFromRecords('I want 500 clinical hours',buildPathlyContext(
 console.log('PASS three distinct profiles, partial/invalid profiles, deterministic priorities, capacity limits, exam language, suggested-goal acceptance, live category targets, milestone crossing and factual planning actions');
 
 const {recommendActions}=require('../app/recommendations.ts');const priorityGoal={...goal,data:{...goal.data,priority:'High'}};assert(recommendActions([...a,priorityGoal,exp]).find(r=>r.id==='goal-'+goal.id).evidence.includes('312 / 500'));assert(answerFromRecords('I want 999999 clinical hours',buildPathlyContext(a)).text.length>0);
+
+for(const profession of ['PT','OT','Nursing','Pre-Nursing']){const data=P.profileData({...base,profession});assert.equal(P.validateAssessment(data),null);assert.equal(P.readProfile(entry('path','profile',data)).profession,profession)}
+assert.equal(P.profileData({...base,profession:'Pre-Nursing'}).pathway,'Pre-Nursing');
+console.log('PASS added pathway validation and profile roundtrip');

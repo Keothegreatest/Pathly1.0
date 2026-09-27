@@ -6,7 +6,8 @@ import {ArrowUpRight,Plus} from 'lucide-react';
 import {MarketingNavbar,MarketingFooter} from './marketing/marketing-shell';
 import AskPathlyDemo from './marketing/ask-pathly-demo';
 import ProductDemo from './marketing/product-demo';
-import ScrollHero,{WorkflowFragments} from './marketing/scroll-hero';
+import ScrollHero from './marketing/scroll-hero';
+import WorkflowSequence from './marketing/workflow-sequence';
 import ProductReveal from './marketing/product-reveal';
 import ScrollProductTour from './marketing/scroll-product-tour';
 import PathlyPurpose from './marketing/pathly-purpose';
@@ -40,7 +41,7 @@ export default function Marketing(){
      <p>Your pre-health journey shouldn’t live across spreadsheets, note apps, saved tabs, and your memory.</p>
      <ul className="recognition-list" aria-label="Parts of your journey">{['Clinical hours','Research','Volunteering','School requirements','Reflections','Letters','Application deadlines'].map(x=><li key={x}>{x}</li>)}</ul>
      <p className="recognition-payoff">You’re already doing the work.<br/><strong>Pathly brings it all together.</strong></p>
-    </div><WorkflowFragments/>
+    </div><WorkflowSequence/>
    </section>
 
    <div id="how-it-works" className="product-story">

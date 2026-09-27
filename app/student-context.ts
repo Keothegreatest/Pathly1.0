@@ -1,3 +1,4 @@
+import {normalizeProfilePathway} from './pathways';
 import type {Entry} from './model';
 
 export type StudentStage = 'Exploring' | 'Building experience' | 'Preparing to apply' | 'Applying now';
@@ -8,7 +9,7 @@ export function getStudentFirstName(profile?:Entry, authName='') {
 export function getStudentDisplayName(profile?:Entry, authName='') {
   return clean(profile?.data.fullName) || clean(authName) || clean(profile?.data.title);
 }
-export function getStudentPath(profile?:Entry) {return clean(profile?.data.pathway);}
+export function getStudentPath(profile?:Entry) {return normalizeProfilePathway(clean(profile?.data.pathway));}
 export function getApplicationCycle(profile?:Entry) {
   const year=clean(profile?.data.applicationYear);
   return /^\d{4}$/.test(year)?`${year} cycle`:'';
@@ -36,3 +37,4 @@ export function getStagePriority(kind:string,stage:StudentStage) {
   const relevant:Record<StudentStage,string[]>={'Exploring':['reflection','story'],'Building experience':['goal','reflection'],'Preparing to apply':['requirement','essay','letter'],'Applying now':['task','essay','letter','school']};
   return relevant[stage].includes(kind)?4:0;
 }
+

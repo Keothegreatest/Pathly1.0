@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
+import Link from './public-link';
 import {useRef,useState} from 'react';
 import {Menu,X,ArrowUpRight} from 'lucide-react';
 const links=[['How it works','/#how-it-works'],['For students','/#for-students'],['Student Stories','/stories'],['Resources','/help']];

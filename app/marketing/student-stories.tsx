@@ -1,9 +1,10 @@
 'use client';
 import {useState,useSyncExternalStore,useId} from 'react';
-import Link from 'next/link';
+import Link from './public-link';
 import {useSearchParams} from 'next/navigation';
+import {pathways} from '../pathways';
 import {ArrowUpRight,Check,SlidersHorizontal} from 'lucide-react';
-import {applicantTypes,emptyFilters,filterStories,parseStoryFilters,profileTags,programs,slug,storyQuery,type StoryFilters,type StudentStory} from './stories-data';
+import {applicantTypes,emptyFilters,filterStories,parseStoryFilters,profileTags,slug,storyQuery,type StoryFilters,type StudentStory} from './stories-data';
 const subscribe=()=>()=>{};
 const clientReady=()=>true,serverReady=()=>false;
 function subscribeFilters(listener:()=>void){window.addEventListener('popstate',listener);window.addEventListener('pathly:story-filters',listener);return()=>{window.removeEventListener('popstate',listener);window.removeEventListener('pathly:story-filters',listener)}}
@@ -14,7 +15,7 @@ export function StoryCard({story,query=''}:{story:StudentStory;query?:string}){
  return <article className="student-story">
   <div className="story-person"><span className="story-monogram" aria-hidden="true">{story.name.charAt(0)}</span><div><h3>{story.name}</h3><span>{story.program} · {story.applicants.join(' · ')}</span></div></div>
   <span className="story-example">{story.verified?'Verified student story':'Fictional example'}</span>
-  <h4>{story.headline}</h4><p>{story.insight}</p>
+  <h4><Link href={`/stories/${story.id}${query?'?'+query:''}`}>{story.headline}</Link></h4><p>{story.insight}</p>
   <div className="story-metrics">{story.metrics.slice(0,3).map(([label,value])=><span key={label}>{value} <small>{label}</small></span>)}</div>
   <Link className="story-link" href={`/stories/${story.id}${query?'?'+query:''}`}>Read {story.name.split(' ')[0]}’s path <ArrowUpRight size={16}/></Link>
  </article>;
@@ -23,7 +24,7 @@ function StoryFiltersControl({value,onChange}:{value:StoryFilters;onChange:(valu
  const ready=useSyncExternalStore(subscribe,clientReady,serverReady);
  const applicantId=useId();
  return <div className="story-filters">
-  <fieldset className="program-filters" disabled={!ready}><legend>Program type</legend><div>{['All',...programs].map(program=>{const key=program==='All'?'':slug(program),active=value.program===key;return <button type="button" key={program} aria-pressed={active} onClick={()=>onChange({...value,program:key})}>{active&&<Check size={13}/>} {program}</button>})}</div></fieldset>
+  <fieldset className="program-filters" disabled={!ready}><legend>Program type</legend><div>{[{id:'',label:'All'},...pathways].map(program=>{const key=program.id,active=value.program===key;return <button type="button" key={key} aria-pressed={active} onClick={()=>onChange({...value,program:key})}>{active&&<Check size={13}/>} {program.label}</button>})}</div></fieldset>
   <div className="story-filter-options"><div className="story-applicant"><label htmlFor={applicantId}>Applicant type</label><select id={applicantId} disabled={!ready} value={value.applicant} onChange={e=>onChange({...value,applicant:e.target.value})}><option value="">All applicants</option>{applicantTypes.map(a=><option key={a} value={slug(a)}>{a}</option>)}</select></div>
   <details className="story-more"><summary><SlidersHorizontal size={15}/> More filters{value.profiles.length?` (${value.profiles.length})`:''}</summary><fieldset disabled={!ready}><legend>Profile characteristics</legend><p>Show stories matching every selected characteristic. These describe examples, not admissions benchmarks.</p>{profileTags.map(tag=>{const key=slug(tag);return <label key={tag}><input type="checkbox" checked={value.profiles.includes(key)} onChange={e=>onChange({...value,profiles:e.target.checked?[...value.profiles,key]:value.profiles.filter(p=>p!==key)})}/>{tag}</label>})}</fieldset></details></div>
  </div>;
