@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {useRef,useState} from 'react';
 import {Menu,X,ArrowUpRight} from 'lucide-react';
-const links=[['How it works','/#how-it-works'],['For students','/#for-students'],['Resources','/help']];
+const links=[['How it works','/#how-it-works'],['For students','/#for-students'],['Student Stories','/stories'],['Resources','/help']];
 export function MarketingBrand(){return <Link className="company-brand" href="/" aria-label="Pathly home"><span className="brand-artwork"><Image unoptimized src="/pathly-brand.png" alt="Pathly" width={2508} height={627}/></span><span className="company-tagline">Your Path, Made Clear.</span></Link>}
 export function MarketingNavbar(){
  const [open,setOpen]=useState(false),toggle=useRef<HTMLButtonElement>(null);
@@ -16,7 +16,7 @@ export function MarketingNavbar(){
 }
 const groups=[
  {title:'Product',links:[['How it works','/#how-it-works'],['Open Pathly','/app']]},
- {title:'Resources',links:[['Help & getting started','/help'],['Example workspace','/#software']]},
+ {title:'Resources',links:[['Help & getting started','/help'],['Student Stories','/stories'],['Example workspace','/#software']]},
  {title:'Company',links:[['Our purpose','/#about'],['For students','/#for-students']]},
  {title:'Legal',links:[['Privacy','/privacy'],['Terms','/terms']]},
 ];

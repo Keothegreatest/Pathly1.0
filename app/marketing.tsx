@@ -13,6 +13,7 @@ import PathlyPurpose from './marketing/pathly-purpose';
 import {useScrollNarrative} from './marketing/use-scroll-narrative';
 import {ClarityBenefits,ConnectedJourney,WorkspaceComparison} from './marketing/journey-benefits';
 import type {ProductView} from './marketing/demo-data';
+import {StoriesPreview} from './marketing/student-stories';
 
 const subscribe=()=>()=>{};
 export default function Marketing(){
@@ -59,6 +60,7 @@ export default function Marketing(){
    </div>
 
    <WorkspaceComparison/>
+   <StoriesPreview/>
    <PathlyPurpose/>
 
    <section className="editorial-explore editorial-section" aria-label="Explore Pathly">

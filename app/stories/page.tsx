@@ -1,0 +1,5 @@
+import {Suspense} from 'react';
+import {MarketingNavbar,MarketingFooter} from '../marketing/marketing-shell';
+import {StoriesDirectory,StoryDisclosure} from '../marketing/student-stories';
+export const metadata={title:'Student Stories — Pathly',description:'Explore illustrative MD, DO, PA, and Dental student journeys. Filter by program, applicant type, and profile characteristics.'};
+export default function StoriesPage(){return <div className="marketing pathly-light editorial stories-page"><a className="skip-link" href="#stories-main">Skip to stories</a><MarketingNavbar/><main id="stories-main" className="editorial-section"><header className="stories-heading"><span className="eyebrow">STUDENT STORIES</span><h1>Real paths<br/>look different.</h1><p>There isn’t one way to build a journey toward healthcare. Explore examples of how organizing experiences, reflections, and plans can bring yours into focus.</p><StoryDisclosure/></header><Suspense fallback={<p role="status">Loading student stories…</p>}><StoriesDirectory/></Suspense></main><MarketingFooter/></div>}

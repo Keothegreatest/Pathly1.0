@@ -61,3 +61,15 @@ Schools, reflections and goals now have real interface captures from the same is
 Below 1000px or with reduced motion, the tour is unpinned and each story displays its own image. Scroll-scrubbed transforms are disabled; content remains readable. Motion preference changes are handled during the session. Static content also remains visible before enhancement.
 
 Browser regression checks now include hero progress changing with scroll, all six active tour steps, keyboard dashboard callouts and switching desktop to reduced motion, alongside the previous responsive, routing, demo and storage-isolation checks.
+
+## Student Stories
+
+`/stories` and `/stories/[id]` are public marketing routes. The shared `student-stories.tsx` collection also powers the homepage preview; `stories-data.ts` owns the five fictional examples, program/applicant/profile taxonomy, URL parsing, filtering, and deterministic related-story ranking. No workspace records, API calls, or database changes are involved.
+
+Filters use AND across program, applicant type, and every selected profile characteristic. Unknown query values are ignored. Query-only native history updates keep controls immediate without server requests; the URL remains the directory's source of truth and supports refresh and back/forward. Homepage preview state is local, then preserved in its directory and detail links. Detail pages retain filters in the return link.
+
+All examples have `verified: false`. Page-level disclosures, card labels, quotes, and outcome text explicitly identify fictional content. These are not customer testimonials or admissions evidence. Replacing examples with consented real stories requires editing the centralized records AND reviewing route-level disclosure/metadata; changing a boolean alone is not a verification workflow.
+
+Program buttons use pressed states and a checkmark, native labeled select/checkbox controls support keyboard input, results counts are announced politely, no-match states offer a reset, and transitions respect reduced motion. Controls wait for hydration before accepting edits. `StoryCollection.onChange` centralizes filter/reset interactions; story links are centralized in `StoryCard`, so future analytics can be wired there without introducing a tracking dependency today.
+
+Validation: `node tests/stories.cjs`; `node tests/stories-browser.cjs` with PATHLY_PLAYWRIGHT_MODULE set if needed. Browser coverage includes homepage-to-directory-to-detail, history, refresh, all programs, combined filters, no matches, invalid parameters/routes, keyboard input, reduced motion, mobile navigation, six viewport widths, and zero private IndexedDB access.
