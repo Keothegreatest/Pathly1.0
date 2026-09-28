@@ -7,7 +7,7 @@
 .editorial .eyebrow{font-size:10px;letter-spacing:.17em;color:var(--editorial-terra)}
 .editorial em{font-family:Georgia,serif;font-weight:400;color:inherit}
 .editorial .primary{background:var(--primary);color:var(--primary-foreground);padding:13px 20px;border-radius:6px;font-size:14px;min-height:48px}
-.editorial .primary:hover{background:var(--foreground);transform:translateY(-1px)}
+.editorial .primary:hover{background:var(--foreground);}
 .editorial .text-button{font-size:14px}
 .editorial section[id],.editorial [id=how-it-works],.editorial details[id]{scroll-margin-top:110px}
 .editorial-actions{display:flex;align-items:center;gap:28px;flex-wrap:wrap}

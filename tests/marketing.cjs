@@ -12,7 +12,10 @@ const combined=[...seen].map(f=>fs.readFileSync(f,'utf8')).join('\n');for(const 
 assert(combined.includes('Your Path, Made Clear.'));assert(combined.includes('No account required'));assert(!fs.existsSync(path.join(__dirname,'../app/marketing-preview.tsx')));
 console.log('PASS curated demo consistency, distinct prompts/context, public dependency isolation, no storage/provider calls, technical-copy exclusion and storage disclosure and brand honesty');
 
-assert(combined.includes('One place to know where you stand.'));
-assert(combined.includes('Pathly brings it all together.'));
-assert(combined.includes('Before Pathly'));
+assert(combined.includes('Your path to healthcare,'));
+assert(combined.includes('What is Pathly?'));
+assert(combined.includes('Keep the work you’ve already done.'));
+assert(!combined.includes('product-spotlight'));
+assert(!fs.existsSync(path.join(__dirname,'../app/marketing/product-reveal.tsx')));
+assert(combined.includes('Turn your records into direction.'));
 assert(!combined.includes('Planning support. Always your decisions.'));

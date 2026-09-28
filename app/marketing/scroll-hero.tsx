@@ -1,17 +1,6 @@
-import Image from 'next/image';
-import {ArrowDown,ArrowUpRight} from 'lucide-react';
-const fragments=[['SPREADSHEET','142 clinical hours'],['NOTES','Hospital shift reflection'],['SAVED TAB','School prerequisites'],['CALENDAR','Application deadline'],['DOC','Personal statement ideas'],['RESEARCH','Programs to compare']];
-function WorkflowFragments(){
- return <div className="workflow-fragments fragments-product" aria-label="Illustrative scattered workflow becoming one Pathly workspace">
-  <div className="fragment-pieces" aria-hidden="true">{fragments.map(([label,text],i)=><div className={'workflow-fragment fragment-'+i} key={label}><span>{label}</span><p>{text}</p></div>)}</div>
-  <div className="fragment-destination"><Image unoptimized src="/marketing/home.webp" width={1440} height={1060} alt="Real Pathly Home with example records, preparation areas, goals and next actions."/></div>
-  <span className="fragment-caption">Example records · Real Pathly interface</span>
- </div>
-}
-export default function ScrollHero(){return <section className="scroll-hero" data-scroll-scene="pinned">
- <div className="scroll-hero-sticky">
-  <div className="scroll-hero-copy"><span className="eyebrow">BUILT FOR PRE-HEALTH STUDENTS</span><h1>Your <span className="keep-together">pre-health</span> journey shouldn’t live in <em>six different places.</em></h1><p>Pathly is an all-in-one planning workspace for pre-health students to organize experiences, school requirements, reflections, goals, and application progress—and understand what deserves their attention next.</p><div className="editorial-actions"><a className="primary" href="/signup">Get started<ArrowUpRight size={18}/></a><a className="text-button" href="#how-it-works">See how it works<ArrowDown size={15}/></a></div><ul className="hero-value"><li>Track what you’ve done.</li><li>See what may be missing.</li><li>Know what comes next.</li></ul></div>
-  <WorkflowFragments/>
-  <div className="hero-chapter"><span>YOU ARE HERE</span><span>A clearer picture starts with what you’ve already done.</span><ArrowDown size={16}/></div>
- </div>
-</section>}
+import {ArrowDown,ArrowUpRight,BookOpen,Network,Compass} from 'lucide-react';
+const workflow=[{label:'Capture',items:'Experiences · Hours · Reflections',Icon:BookOpen},{label:'Connect',items:'Programs · Requirements · Goals',Icon:Network},{label:'Act',items:'Readiness · Next Best Actions',Icon:Compass}];
+export default function ScrollHero(){return <section className="clear-hero editorial-section">
+ <div className="clear-hero-copy"><span className="eyebrow">YOUR HEALTHCARE JOURNEY, CONNECTED</span><h1>Your path to healthcare,<br/><em>made clear.</em></h1><p>Pathly brings your experiences, goals, reflections, school research, and application planning into one connected workspace—so you can see where you stand and what deserves your attention next.</p><div className="editorial-actions"><a className="primary" href="/signup">Get started<ArrowUpRight size={18}/></a><a className="text-button" href="#how-it-works">See how Pathly works<ArrowDown size={15}/></a></div><small>No account required. Your records stay in this browser.</small></div>
+ <ol className="hero-workflow" aria-label="From your experiences to your next step">{workflow.map(({label,items,Icon},i)=><li key={label}><div className="workflow-symbol"><Icon size={22} strokeWidth={1.4}/></div><div><span className="eyebrow">0{i+1} / {label}</span><h2>{label==='Capture'?'Keep what matters.':label==='Connect'?'See the bigger picture.':'Find your next step.'}</h2><p>{items}</p></div></li>)}</ol>
+ </section>}

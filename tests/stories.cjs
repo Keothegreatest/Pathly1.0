@@ -1,8 +1,11 @@
 const fs=require('fs'),ts=require('typescript'),assert=require('node:assert/strict');
 require.extensions['.ts']=(m,p)=>m._compile(ts.transpileModule(fs.readFileSync(p,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,p);
 const {studentStories,programs,emptyFilters,filterStories,parseStoryFilters,storyQuery,relatedStories}=require('../app/marketing/stories-data.ts');
-assert.equal(new Set(studentStories.map(s=>s.id)).size,11);
-assert(studentStories.every(s=>!s.verified&&s.outcome.includes('fictional')));
+assert.equal(new Set(studentStories.map(s=>s.id)).size,10);
+assert(studentStories.every(s=>!s.verified&&s.visual&&fs.existsSync('public'+s.visual.src)));
+assert(!programs.includes('Pre-Nursing'));assert(!studentStories.some(s=>s.id==='noah-b'));
+assert.equal(parseStoryFilters(new URLSearchParams('program=pre-nursing')).program,'');
+assert(require('../app/pathways.ts').pathways.some(p=>p.id==='pre-nursing'));
 for(const program of programs)assert(filterStories({...emptyFilters,program:program==='MD/DO'?'md-do':program.toLowerCase()}).length>0);
 assert.deepEqual(filterStories({program:'md',applicant:'first-generation',profiles:['research-focused']}).map(s=>s.id),['maya-r']);
 assert.equal(filterStories({program:'md-do',applicant:'nontraditional',profiles:[]})[0].id,'grace-w');

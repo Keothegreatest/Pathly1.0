@@ -23,20 +23,17 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
  await p.locator('#software > summary').click();
  await p.evaluate(()=>scrollTo(0,0));
 
- const hero=p.locator('.scroll-hero');
- await p.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.scroll-hero')).getPropertyValue('--story-progress'))<.03);
- const startProgress=await hero.evaluate(e=>Number(getComputedStyle(e).getPropertyValue('--story-progress')));
- await p.evaluate(()=>scrollTo(0,450));await p.waitForTimeout(100);
- assert(await hero.evaluate(e=>Number(getComputedStyle(e).getPropertyValue('--story-progress')))>startProgress,'hero responds to scroll');
+ assert.equal(await p.locator('.hero-workflow li').count(),3);
+ assert.equal(await p.locator('.what-columns article').count(),3);
+ assert.equal(await p.locator('.product-spotlight').count(),0);
+ assert(await p.getByRole('heading',{name:'Your path to healthcare, made clear.'}).isVisible());
  for(let i=0;i<6;i++){
   await p.locator('[data-tour-step="'+i+'"]').evaluate(e=>e.scrollIntoView({block:'center'}));
   await p.waitForFunction(i=>document.querySelector('[data-tour-step="'+i+'"]').getAttribute('data-active')==='true',i);
  }
- await p.getByRole('button',{name:'Application readiness',exact:true}).focus();
- assert.equal(await p.getByRole('button',{name:'Application readiness',exact:true}).getAttribute('aria-pressed'),'true');
  await p.evaluate(()=>scrollTo(0,0));
  await p.screenshot({path:'work/editorial-hero.png'});
- for(const selector of ['.recognition','.clarity-benefits','.connected-journey','.chapter-wide','.scroll-product-tour','.pathly-purpose','.next-chapter','.workspace-comparison','.editorial-final']){
+ for(const selector of ['.what-pathly','.scroll-product-tour','.next-chapter','.editorial-final']){
   await p.locator(selector).scrollIntoViewIfNeeded();await p.waitForTimeout(650);
   await p.locator(selector).screenshot({path:'work/editorial-'+selector.slice(1)+'.png'});
  }
@@ -78,5 +75,5 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
  assert.equal(await p.evaluate(()=>window.__reads),0);
  for(const route of ['/login','/signup']){await p.goto(base+route);await p.waitForURL('**/app');await p.getByRole('button',{name:'Open Ask Pathly',exact:true}).waitFor();}
  assert.deepEqual(errors,[]);await b.close();
- console.log('PASS six responsive sizes, screenshots, intact entry routes, zero public personal-data reads, five Ask demos, six product views, mobile navigation, anchors, scroll-driven hero/tour, keyboard callouts and desktop reduced motion');
+ console.log('PASS six responsive sizes, screenshots, intact entry routes, zero public personal-data reads, five Ask demos, six product views, mobile navigation, anchors, clear workflow hero, scroll-driven tour and desktop reduced motion');
 })().catch(e=>{console.error(e);process.exit(1)});

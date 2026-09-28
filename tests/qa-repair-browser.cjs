@@ -39,13 +39,13 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5175';
  await p.locator('.home-priorities .why-action').first().click();await p.locator('.copilot-panel').waitFor();await p.keyboard.press('Escape');await p.locator('.copilot-panel').waitFor({state:'hidden'});
  await p.locator('.home-action-controls>.primary').first().click();await p.getByRole('dialog').waitFor();await p.keyboard.press('Escape');
  await p.goto(base+'/');await p.locator('.marketing[data-ready=true]').waitFor();
- assert.equal(await p.locator('.workflow-sequence li').count(),4);
+ assert.equal(await p.locator('.what-columns article').count(),3);
  assert(!(await p.locator('#for-students').innerText()).includes('Illustrative workflow'));
  for(const [width,height] of [[1440,900],[1024,768],[768,1024],[390,844]]){
   await p.setViewportSize({width,height});await p.locator('#for-students').scrollIntoViewIfNeeded();
   assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   await p.locator('#for-students').screenshot({path:`work/qa-workflow-${width}.png`});
  }
- assert.deepEqual(errors,[]);console.log('PASS populated dashboard layout/long titles at four widths, planning CTA and Pre-Nursing persistence, all quick actions, readiness, recommendation action and explanation, four-step responsive workflow, no console errors');
+ assert.deepEqual(errors,[]);console.log('PASS populated dashboard layout/long titles at four widths, planning CTA and Pre-Nursing persistence, all quick actions, readiness, recommendation action and explanation, three-part responsive workflow, no console errors');
 }finally{await b.close()}})().catch(e=>{console.error(e);process.exit(1)});
 

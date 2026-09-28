@@ -1,4 +1,4 @@
-export const metadata={title:'Pathly — Your Path to Healthcare, Made Clearer',description:'Track your experiences, understand your progress, and know what to work on next. One personal workspace for your pre-health journey.'};
+export const metadata={title:'Pathly — Your Path to Healthcare, Made Clear',description:'A connected pre-health planning workspace for experiences, reflections, school research, goals, and application preparation. See what deserves your attention next.'};
 import {redirect} from 'next/navigation';
 import Marketing from './marketing';
 import {workspaceRoute} from './workspace-route';
