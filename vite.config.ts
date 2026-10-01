@@ -14,6 +14,8 @@ const localBindingConfig = {
   main: "vinext/server/fetch-handler",
   compatibility_flags: ["nodejs_compat"],
   d1_databases: [],
+  // Opt-in deployment binding; no external assistant is enabled by default.
+  ...(process.env.PATHLY_ASSISTANT_RATE_NAMESPACE ? {ratelimits:[{name:'ASSISTANT_RATE_LIMITER',namespace_id:process.env.PATHLY_ASSISTANT_RATE_NAMESPACE,simple:{limit:6,period:60 as const}}]} : {}),
   r2_buckets: r2
     ? [
         {

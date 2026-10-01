@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 (async()=>{
  const b=await chromium.launch({channel:'msedge',headless:true}),p=await b.newPage(),errors=[];
  p.on('pageerror',e=>errors.push(e.message));
- await p.goto('http://localhost:5174/app');
+ await p.goto((process.env.PATHLY_BASE_URL||'http://localhost:5174')+'/app');
  await p.getByLabel('Your name',{exact:true}).fill('Drawer Check');
  await p.getByRole('button',{name:'Continue to Pathly'}).click();
  await p.getByRole('button',{name:'Finish later',exact:true}).click();

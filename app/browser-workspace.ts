@@ -18,3 +18,9 @@ import type {AssistantMessage} from './assistant-types';
 export async function loadConversation():Promise<AssistantMessage[]>{return transaction(state=>state.conversation||[],false)}
 export async function saveConversation(messages:AssistantMessage[]){if(messages.length>30||messages.some(m=>!['user','assistant'].includes(m.role)||m.text.length>20000))throw new Error('Invalid conversation');await transaction(state=>{state.conversation=messages},true)}
 export async function claimMilestone(id:string){return transaction(state=>{const seen=state.milestones||[];if(seen.includes(id))return false;state.milestones=[...seen,id].slice(-300);return true},true)}
+
+export async function loadPlanningMemories(){return transaction(state=>state.planningMemories||[],false)}
+export async function updatePlanningMemory(id:string,text:string|null){
+ if(!id||id.length>100||text!==null&&(!text.trim()||text.trim().length>240))throw new Error('Keep a planning decision between 1 and 240 characters.');
+ return transaction(state=>{const rows=state.planningMemories||[];if(text!==null&&!rows.some(m=>m.id===id)&&rows.length>=8)throw new Error('Keep up to eight decisions. Edit or remove an older one first.');state.planningMemories=text===null?rows.filter(m=>m.id!==id):[{id,text:text.trim(),updated:new Date().toISOString()},...rows.filter(m=>m.id!==id)];return state.planningMemories;},true);
+}

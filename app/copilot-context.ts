@@ -1,3 +1,7 @@
+import {buildStudentIntelligence,type PlanningMemory} from './student-intelligence';
+import {retrievePlanningContext} from './assistant-retrieval';
+import {synthesizeLocalPlan} from './planning-synthesis';
+import type {AssistantMessage} from './assistant-types';
 import {planningAnswer} from './planning-answer';
 import type {Entry} from './model';
 import type {NextAction,Destination} from './journey';
@@ -20,8 +24,9 @@ export function resolveCopilotAction(destination:Destination,records:Entry[]):De
  return destination;
 }
 export function explainRecommendation(action:NextAction):AssistantAnswer{return {mode:'local-planning',text:`WHY THIS DESERVES ATTENTION\n\n${action.title}\n\n${action.reason}\n\nWhat Pathly knows: ${action.evidence}\n\nThis is based on your saved information. Review the details before making changes.`,actions:[{label:action.label,destination:action.destination}]}}
-export function sendAskPathlyMessage(question:string,records:Entry[],page:string):AssistantAnswer{
+export function sendAskPathlyMessage(question:string,records:Entry[],page:string,history:AssistantMessage[]=[],memories:PlanningMemory[]=[]):AssistantAnswer{
  const focused=planningAnswer(question,records);if(focused)return focused;
+ const intelligence=buildStudentIntelligence(records,memories);const selected=retrievePlanningContext(intelligence,question,history);const synthesis=synthesizeLocalPlan(intelligence,selected,question,history);if(synthesis)return synthesis;
  const q=question.toLowerCase(),context=buildPathlyContext(records);
  if(/gap|missing|prerequisite|compare|stronger reflections/.test(q)){
   const relevant=context.actions.filter(a=>page==='Home'||a.destination.page===page);

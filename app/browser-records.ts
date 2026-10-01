@@ -1,7 +1,7 @@
 import {validateAssessment} from './personalization';
 import type {Entry} from './model';
 import {recordLinks,taskComplete,letterStatus} from './record-links';
-export type BrowserWorkspace={records:Entry[];hasCompletedOnboarding:boolean;conversation?:import('./assistant-types').AssistantMessage[];milestones?:string[]};
+export type BrowserWorkspace={planningMemories?:import('./student-intelligence').PlanningMemory[];records:Entry[];hasCompletedOnboarding:boolean;conversation?:import('./assistant-types').AssistantMessage[];milestones?:string[]};
 const kinds=new Set(['experience','reflection','story','school','requirement','goal','letter','essay','task','profile','capture','schoolNote']);
 export function changeRecord(state:BrowserWorkspace,method:string,input:unknown):{record?:Entry;error?:string;status?:number}{
  if(!input||typeof input!=='object')return {error:'A valid entry is required.',status:400};
