@@ -25,7 +25,7 @@ export function getQuickActions(records:Entry[]):QuickAction[] {
   return actions;
 }
 export function getReadinessStatus(records:Entry[]) {
-  return readiness(records).map(area=>({...area,status:area.state==='empty'?'No information yet':area.state==='attention'?(['School planning','Academic preparation'].includes(area.name)?'Needs attention':'Started'):'Some evidence documented'}));
+  return readiness(records);
 }
 export function getUpcomingItems(records:Entry[],now=new Date()) {return upcoming(records,now);}
 export function getWeeklyActivity(records:Entry[],now=new Date()) {

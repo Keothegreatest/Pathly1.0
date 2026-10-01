@@ -29,7 +29,7 @@ export function recommendActions(records: Entry[], now = new Date()): NextAction
     }
     for (const requirement of requirements.filter(r => !addressed(r))) {
       const hard = requirement.data.type === 'Hard requirement';
-      add('requirement-' + requirement.id, `Review ${requirement.data.title}`, 'Check your completion evidence and the school’s official source, then update this requirement.', `${school.data.title} · ${requirement.data.category || 'Requirement'} · ${requirement.data.status || 'Not reviewed'} · ${hard ? 'Required' : 'Recommendation'}${requirement.data.source && requirement.data.verified ? '' : ' · Source needs verification'}`, 'Update requirement', hard ? 88 : 63, edit('Schools', requirement, 'requirement'));
+      add('requirement-' + requirement.id, `Review ${requirement.data.title}`, 'Check your completion evidence and the school’s official source, then update this requirement.', `${school.data.title} · ${requirement.data.category || 'Requirement'} · ${requirement.data.status || 'Not reviewed'} · ${hard ? 'Required' : requirement.data.type==='Recommendation'?'Recommendation':'Type not recorded'}${requirement.data.source && requirement.data.verified ? '' : ' · Source needs verification'}`, 'Update requirement', hard ? 88 : 63, edit('Schools', requirement, 'requirement'));
     }
     if (!requirements.length) add('research-' + school.id, `Document requirements for ${school.data.title}`, 'No structured requirements are saved. Add requirements from the program’s official information so Pathly can connect them to your preparation.', `${school.data.title} · 0 saved requirements`, 'Add requirement', 54, {page:'Schools', tab:'requirement', kind:'requirement', data:{school:school.id}});
     else if (requirements.some(r => addressed(r) && (!r.data.source || !r.data.verified))) {
@@ -38,7 +38,7 @@ export function recommendActions(records: Entry[], now = new Date()): NextAction
     }
     const clinical = of('experience').filter(e => e.data.category === 'Clinical Experience').reduce((n,e) => n + Number(e.data.hours || 0), 0);
     const required = Number(school.data.clinical);
-    if (Number.isFinite(required) && required > clinical) add('clinical-' + school.id, `Review the clinical-hour gap for ${school.data.title}`, 'Compare your experience with the school’s definition of eligible hours. This is a recorded requirement, not an admissions prediction.', `${clinical} documented clinical hours / ${required} entered requirement${school.data.verified ? '' : ' · Requirement needs verification'}`, 'Review school', 84, edit('Schools', school, 'school'));
+    if (Number.isFinite(required) && required > clinical) add('clinical-' + school.id, `Review documented clinical hours for ${school.data.title}`, 'Compare your experience with the school’s definition of eligible hours. Fewer documented hours can mean missing records, not missing experience. This is an entered figure, not an eligibility decision.', `${clinical} documented clinical hours / ${required} entered requirement${school.data.verified ? '' : ' · Requirement needs verification'}`, 'Review school', 84, edit('Schools', school, 'school'));
   }
   for (const task of of('task').filter(t => !taskComplete(t))) {
     const days = daysTo(task.data.target);
@@ -56,7 +56,8 @@ export function recommendActions(records: Entry[], now = new Date()): NextAction
     const latest = reflections[0];
     const draft=of('reflection').filter(r=>r.data.experience===experience.id&&(r.data.status==='Draft'||!r.data.content?.trim())).sort((a,b)=>b.updated.localeCompare(a.updated))[0];
     const addedHours = latest?.data.hoursAtReflection !== undefined ? Number(experience.data.hours || 0)-Number(latest.data.hoursAtReflection) : 0;
-    const recent = now.getTime()-Date.parse(experience.updated) <= 30*DAY;
+    const age = now.getTime()-Date.parse(experience.updated);
+    const recent = age>=0 && age <= 30*DAY;
     // A new reflection needs meaningful accumulated hours and a two-week cooldown.
     const needsAnother = latest && addedHours >= 8 && now.getTime()-Date.parse(latest.updated) >= 14*DAY;
     if((!latest||needsAnother)&&draft)add('reflection-'+experience.id,`Continue your reflection on ${experience.data.title}`,'You have a saved reflection draft. Pick up with the details you want to preserve.','Draft last updated '+draft.updated.slice(0,10),'Continue reflection',recent?81:66,edit('Experiences',draft,'reflection'));

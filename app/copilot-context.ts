@@ -1,3 +1,4 @@
+import {planningAnswer} from './planning-answer';
 import type {Entry} from './model';
 import type {NextAction,Destination} from './journey';
 import type {AssistantAnswer} from './assistant-types';
@@ -20,6 +21,7 @@ export function resolveCopilotAction(destination:Destination,records:Entry[]):De
 }
 export function explainRecommendation(action:NextAction):AssistantAnswer{return {mode:'local-planning',text:`WHY THIS DESERVES ATTENTION\n\n${action.title}\n\n${action.reason}\n\nWhat Pathly knows: ${action.evidence}\n\nThis is based on your saved information. Review the details before making changes.`,actions:[{label:action.label,destination:action.destination}]}}
 export function sendAskPathlyMessage(question:string,records:Entry[],page:string):AssistantAnswer{
+ const focused=planningAnswer(question,records);if(focused)return focused;
  const q=question.toLowerCase(),context=buildPathlyContext(records);
  if(/gap|missing|prerequisite|compare|stronger reflections/.test(q)){
   const relevant=context.actions.filter(a=>page==='Home'||a.destination.page===page);
