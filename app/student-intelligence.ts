@@ -1,3 +1,4 @@
+import {getProgramAlignment} from './program-alignment';
 import type {Entry} from './model';
 import {readProfile} from './personalization';
 import {getStudentStage} from './student-context';
@@ -29,7 +30,7 @@ export function buildStudentIntelligence(records:Entry[],memories:PlanningMemory
    const p=goalProgress(r,records);add('progress',`${clean(d.title)}: ${p.current} / ${p.total||'unspecified'} ${clean(d.unit)} · ${clean(d.status)||'status not set'} · priority ${clean(d.priority)||'not set'} · target ${d.target||'not set'}.`);
    const age=now.getTime()-Date.parse(r.updated);if(age>30*86400000&&!['Completed','Paused'].includes(d.status))add('stale','No update to this goal record in over 30 days. That does not prove progress has stalled.','unknown');
   }else if(r.kind==='requirement')add('requirement',`${clean(d.title)} · ${clean(d.type)||'classification unknown'} · ${clean(d.category)||'area unknown'} · ${clean(d.status)||'not reviewed'} · ${hasRequirementSource(r)?'source and review date entered; not independently verified':'source evidence incomplete'} · review date ${d.verified||'unknown'}.`);
-  else if(r.kind==='school')add('school',`${clean(d.title)} · status ${clean(d.status)||'not set'} · deadline ${d.deadline||'unknown'} · program ${clean(d.program)||'not set'}.`);
+  else if(r.kind==='school'){const alignment=getProgramAlignment(r,records,now);for(const [i,row] of alignment.rows.entries())add('alignment-'+i,row.label+': '+row.student+'. Saved program information: '+row.program+'. '+row.interpretation);add('provenance',alignment.source.label);add('school',`${clean(d.title)} · status ${clean(d.status)||'not set'} · deadline ${d.deadline||'unknown'} · program ${clean(d.program)||'not set'}.`);}
   else if(r.kind==='task')add('task',`${clean(d.title)}: ${taskComplete(r)?'completed':'open'} · target ${d.target||'not set'}.`);
   else if(r.kind==='letter')add('letter',`Recommendation planning: ${letterStatus(r)} · target ${d.target||'not set'}.`);
   else if(['reflection','story','essay'].includes(r.kind))add('writing',`${clean(d.title)}: ${clean(d.status)||'status not set'} · ${d.content?.trim()||d.happened?.trim()?'text saved':'no text saved'} · themes ${clean(d.themes)||'not recorded'}.`);

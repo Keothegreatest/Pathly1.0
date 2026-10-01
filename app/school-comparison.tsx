@@ -1,3 +1,4 @@
+import {getProgramAlignment} from './program-alignment';
 import type {Entry} from './model';
 import {letterStatus} from './record-links';
 import {SchoolAlignment} from './record-detail';
@@ -7,7 +8,7 @@ const details=[['status','Application status'],['interview','Interview date'],['
 function comparisonRows(school:Entry,records:Entry[]){
  const linked=records.filter(r=>r.data.school===school.id);
  const prerequisites=linked.filter(r=>r.kind==='requirement'&&r.data.category==='Prerequisite');
- return [...details.map(([key,label])=>({label,value:school.data[key]||'Not documented'})),
+ return [...getProgramAlignment(school,records).rows.map(r=>({label:'Alignment · '+r.label,value:r.student+' / '+r.program+' — '+r.interpretation})),...details.map(([key,label])=>({label,value:school.data[key]||'Not documented'})),
   {label:'Unresolved prerequisites',value:prerequisites.filter(r=>!['Complete','Not applicable'].includes(r.data.status)).map(r=>r.data.title).join('; ')||(prerequisites.length?'None recorded as unresolved':'Not documented')},
   {label:'Linked recommenders',value:linked.filter(r=>r.kind==='letter').map(r=>`${r.data.title} — ${letterStatus(r)}`).join('; ')||'Not documented'},
   {label:'Writing & supplementals',value:linked.filter(r=>r.kind==='essay').map(r=>`${r.data.title} — ${r.data.status||'Draft'}`).join('; ')||'Not documented'},

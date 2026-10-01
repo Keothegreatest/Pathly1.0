@@ -1,3 +1,4 @@
+import {sourceQuality,getSchoolEvidence} from './school-evidence';
 import type { Entry } from './model';
 import {goalProgress} from './goal-progress';
 import {getStudentStage,getStagePriority} from './student-context';
@@ -22,23 +23,23 @@ export function recommendActions(records: Entry[], now = new Date()): NextAction
   };
   const edit = (page: string, record: Entry, tab?: string): Destination => ({ page, record, tab, edit: true });
   for (const school of of('school').filter(s => !closedSchools.includes(s.data.status))) {
-    const requirements = of('requirement').filter(r => r.data.school === school.id);
+    const requirements = getSchoolEvidence(school,records,now).requirements;
     const days = daysTo(school.data.deadline);
     if (Number.isFinite(days) && days <= 45 && days >= -14) {
       add('deadline-' + school.id, `Review ${school.data.title}’s deadline`, 'Verify the official date and address the remaining preparation before submitting.', `${school.data.deadline} · ${days < 0 ? 'Recorded deadline has passed' : `${days} days remaining`} · ${requirements.filter(r => !addressed(r)).length} unresolved recorded requirements`, 'Review school', 110 - Math.max(days, 0) / 10, edit('Schools', school, 'school'));
     }
     for (const requirement of requirements.filter(r => !addressed(r))) {
       const hard = requirement.data.type === 'Hard requirement';
-      add('requirement-' + requirement.id, `Review ${requirement.data.title}`, 'Check your completion evidence and the school’s official source, then update this requirement.', `${school.data.title} · ${requirement.data.category || 'Requirement'} · ${requirement.data.status || 'Not reviewed'} · ${hard ? 'Required' : requirement.data.type==='Recommendation'?'Recommendation':'Type not recorded'}${requirement.data.source && requirement.data.verified ? '' : ' · Source needs verification'}`, 'Update requirement', hard ? 88 : 63, edit('Schools', requirement, 'requirement'));
+      add('requirement-' + requirement.id, `Review ${requirement.data.title}`, 'Check your completion evidence and the school’s official source, then update this requirement.', `${school.data.title} · ${requirement.data.category || 'Requirement'} · ${requirement.data.status || 'Not reviewed'} · ${hard ? 'Required' : requirement.data.type==='Recommendation'?'Recommendation':'Type not recorded'}${sourceQuality(requirement,now).current ? '' : ' · Source needs verification'}`, 'Update requirement', hard ? 88 : 63, edit('Schools', requirement, 'requirement'));
     }
     if (!requirements.length) add('research-' + school.id, `Document requirements for ${school.data.title}`, 'No structured requirements are saved. Add requirements from the program’s official information so Pathly can connect them to your preparation.', `${school.data.title} · 0 saved requirements`, 'Add requirement', 54, {page:'Schools', tab:'requirement', kind:'requirement', data:{school:school.id}});
-    else if (requirements.some(r => addressed(r) && (!r.data.source || !r.data.verified))) {
-      const r = requirements.find(r => addressed(r) && (!r.data.source || !r.data.verified))!;
-      add('verify-' + r.id, `Verify ${r.data.title}`, 'This item is marked addressed, but its source or verification date is missing.', school.data.title + ' · ' + r.data.title, 'Verify requirement', 59, edit('Schools', r, 'requirement'));
+    else if (requirements.some(r => addressed(r) && !sourceQuality(r,now).current)) {
+      const r = requirements.find(r => addressed(r) && !sourceQuality(r,now).current)!;
+      add('verify-' + r.id, `Verify ${r.data.title}`, 'This item is marked addressed, but its source or review date needs verification.', school.data.title + ' · ' + r.data.title, 'Verify requirement', 59, edit('Schools', r, 'requirement'));
     }
     const clinical = of('experience').filter(e => e.data.category === 'Clinical Experience').reduce((n,e) => n + Number(e.data.hours || 0), 0);
     const required = Number(school.data.clinical);
-    if (Number.isFinite(required) && required > clinical) add('clinical-' + school.id, `Review documented clinical hours for ${school.data.title}`, 'Compare your experience with the school’s definition of eligible hours. Fewer documented hours can mean missing records, not missing experience. This is an entered figure, not an eligibility decision.', `${clinical} documented clinical hours / ${required} entered requirement${school.data.verified ? '' : ' · Requirement needs verification'}`, 'Review school', 84, edit('Schools', school, 'school'));
+    if (Number.isFinite(required) && required > clinical) add('clinical-' + school.id, `Review documented clinical hours for ${school.data.title}`, 'Compare your experience with the school’s definition of eligible hours. Fewer documented hours can mean missing records, not missing experience. This is an entered figure, not an eligibility decision.', `${clinical} documented clinical hours / ${required} entered requirement${sourceQuality({...school,data:{...school.data,source:school.data.website}},now).current ? '' : ' · Requirement needs verification'}`, 'Review school', 84, edit('Schools', school, 'school'));
   }
   for (const task of of('task').filter(t => !taskComplete(t))) {
     const days = daysTo(task.data.target);

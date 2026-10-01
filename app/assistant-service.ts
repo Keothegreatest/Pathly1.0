@@ -29,6 +29,6 @@ export function answerFromRecords(question:string,c:PathlyContext):AssistantAnsw
   if(c.actions.length){paragraphs.push(c.actions.map((a,i)=>`${i+1}. ${a.title} — ${a.evidence}`).join('\n'));actions.push(...c.actions.map(a=>({label:a.label,destination:a.destination})));}
   else if(p.goals.length){paragraphs.push('Your selected priorities are '+p.goals.map(k=>goalLabel(k,p)).join(', ')+'. Review one active goal and choose a small next step.');actions.push({label:'Review goals',destination:{page:'Goals'}})}
   else {paragraphs.push('There isn’t enough saved context to select a personal priority yet. Add an experience or complete your Pathly plan.');actions.push({label:'Add an experience',destination:{page:'Experiences',kind:'experience'}})}
- }else paragraphs.push('This local planning guide can explain your saved priorities, review documented progress, help structure a reflection, and point you to school requirements. It is not a connected language model. Try “What should I focus on next?” or “How close am I to my clinical-hours goal?”');
+ }else paragraphs.push('Pathly can explain your saved priorities, review documented progress, help structure a reflection, and point you to school requirements. Try “What should I focus on next?” or “How close am I to my clinical-hours goal?”');
  return {text:paragraphs.join('\n\n'),actions:actions.slice(0,3),mode:'local-planning'};
 }

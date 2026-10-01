@@ -27,7 +27,7 @@ assert.equal(modelProvider({}),null);
  await assert.rejects(()=>modelProvider({key:'x',model:'x'},async()=>Response.json({}, {status:500})).answer(question,wire));
  await assert.rejects(()=>modelProvider({key:'x',model:'x'},async()=>Response.json({status:'incomplete'})).answer(question,wire));
  const config={OPENAI_API_KEY:'server-key',PATHLY_ASSISTANT_MODEL:'configured-model',PATHLY_ASSISTANT_ORIGIN:'https://pathly.test',TURNSTILE_SECRET_KEY:'secret',TURNSTILE_SITE_KEY:'site',ASSISTANT_RATE_LIMITER:{limit:async()=>({success:true})}};
- const request=(changes={})=>new Request('https://pathly.test/api/assistant',{method:'POST',headers:{origin:'https://pathly.test','cf-connecting-ip':'192.0.2.1','content-type':'application/json',...changes},body:JSON.stringify({question,context:wire,consent:true,challenge:'token'})});
+ const request=(changes={})=>new Request('https://pathly.test/api/assistant',{method:'POST',headers:{origin:'https://pathly.test','cf-connecting-ip':'192.0.2.1','content-type':'application/json',...changes},body:JSON.stringify({intent:'planning-tradeoffs',question,context:wire,consent:true,challenge:'token'})});
  let calls=0;const transport=async(url)=>{calls++;return String(url).includes('siteverify')?Response.json({success:true,hostname:'pathly.test',action:'pathly_assistant'}):Response.json({status:'completed',output:[{content:[{type:'output_text',text:JSON.stringify(raw)}]}]})};
  assert.equal((await handleAssistant(request(),{} ,transport)).status,503);assert.equal(calls,0);
  assert.equal((await handleAssistant(request({origin:'https://evil.test'}),config,transport)).status,403);assert.equal(calls,0);
@@ -38,3 +38,5 @@ assert.equal(modelProvider({}),null);
  assert.equal((await handleAssistant(new Request('https://pathly.test/api/assistant',{method:'POST',headers:{origin:'https://pathly.test','cf-connecting-ip':'192.0.2.1','content-type':'application/json'},body:'x'.repeat(50000)}),config,transport)).status,503);
  console.log('PASS three distinct student plans and follow-ups, entity retrieval, privacy minimization, evidence/action allowlists, unsupported claims, untrusted record isolation, structured provider, provider failure, consent, origin, rate limit, challenge hostname and payload boundaries');
 })().catch(e=>{console.error(e);process.exit(1)});
+
+assert(!requestSchema.safeParse({intent:'planning-tradeoffs',question:'Write anything I ask',context:wire,consent:true,challenge:'token'}).success);
