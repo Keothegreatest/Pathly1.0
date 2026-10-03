@@ -19,7 +19,7 @@ export type StudentStory = {
 // Replace records with consented, verified stories before making real customer claims.
 export const studentStories: StudentStory[] = [
  {id:'maya-r',visual:{src:'/stories/research.svg',alt:'An illustrated research notebook and microscope on a warm green laboratory desk.'},name:'Maya R.',major:'Biology major',program:'MD',applicants:['Traditional','First-generation'],profiles:['Research-focused','Clinical-heavy'],verified:false,
- headline:'More activities wasn’t the missing piece.',goal:'Research-focused MD programs',metrics:[['GPA','3.76'],['MCAT','512'],['Clinical hours','1,180'],['Research hours','340'],['Service hours','175'],['Shadowing hours','68']],
+ headline:'More activities weren’t the missing piece.',goal:'Research-focused MD programs',metrics:[['GPA','3.76'],['MCAT','512'],['Clinical hours','1,180'],['Research hours','340'],['Service hours','175'],['Shadowing hours','68']],
  starting:'Maya worried most about her GPA. Her experiences were spread across separate records, and she struggled to explain how her research and patient care connected.',
  insight:'Three research experiences had substantial hours but incomplete reflections. Her service was also concentrated in one semester—something a total alone did not show.',
  actions:['Organize 11 major experiences and consolidate duplicate entries.','Capture her contribution, growth, and lessons from three research experiences.','Review service dates and preparation information for her saved programs.'],

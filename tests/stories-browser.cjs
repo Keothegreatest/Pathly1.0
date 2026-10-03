@@ -24,8 +24,8 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
  await p.getByLabel('Research-focused',{exact:true}).check();await p.getByLabel('Applicant type',{exact:true}).selectOption('first-generation');
  await p.waitForFunction(()=>document.querySelectorAll('.student-story').length===1);
  assert((await p.locator('.student-story').innerText()).includes('Maya'));
- await p.getByRole('link',{name:'Read Maya’s path'}).click();await p.waitForURL('**/stories/maya-r?*');
- await p.getByRole('heading',{name:'More activities wasn’t the missing piece.'}).waitFor();
+ await p.getByRole('link',{name:'Read Maya’s story'}).click();await p.waitForURL('**/stories/maya-r?*');
+ await p.getByRole('heading',{name:'More activities weren’t the missing piece.'}).waitFor();
  await p.getByText('See how their path changed',{exact:true}).click();
  assert(await p.getByRole('heading',{name:'With Pathly',exact:true}).isVisible());
  await p.getByRole('link',{name:'Back to stories'}).click();
@@ -37,11 +37,11 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
  assert.equal(await preview.locator('.student-story').count(),1);
  await preview.getByRole('link',{name:'Explore all student stories'}).click();await p.waitForURL('**/stories?program=pa');
  await p.getByRole('heading',{name:'Priya S.',exact:true}).waitFor();assert(p.url().includes('program=pa'));
- for(const [width,height] of [[1440,900],[1280,800],[1024,768],[768,1024],[390,844],[375,812]]){
+ for(const [width,height] of [[1440,900],[1280,800],[1024,768],[768,1024],[430,932],[375,812]]){
   await p.setViewportSize({width,height});await p.goto(base+'/stories');
   await p.getByRole('heading',{name:'Maya R.',exact:true}).waitFor();
   assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'overflow at '+width);
-  for(const image of await p.locator('.story-visual').all()){await image.scrollIntoViewIfNeeded();await image.evaluate(el=>el.decode());assert(await image.evaluate(el=>el.naturalWidth>0))}
+  assert.equal(await p.locator('.student-story .story-journey-map').count(),10);assert.equal(await p.locator('.story-visual').count(),0);const columns=await p.locator('.story-grid').first().evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);assert.equal(columns,width>1100?3:width>760?2:1);if(width===375){assert(await p.locator('.program-filters>div').evaluate(el=>el.scrollWidth>el.clientWidth));}
   if(width===1440||width===375)await p.screenshot({path:`work/stories-${width}.png`,fullPage:true});
   if(width===375){await p.getByRole('button',{name:'Open navigation'}).click();await p.getByRole('navigation',{name:'Mobile website navigation'}).getByRole('link',{name:'Student Stories'}).waitFor();await p.keyboard.press('Escape')}
  }
@@ -56,7 +56,7 @@ const base=process.env.PATHLY_BASE_URL||'http://localhost:5174';
  await p.goto(base+'/stories/not-a-student');await p.getByRole('heading',{name:'We couldn’t find that student story.'}).waitFor();
  await p.goto(base+'/stories?program=invalid&profile=invalid');await p.getByRole('heading',{name:'Maya R.',exact:true}).waitFor();assert.equal(await p.locator('.student-story').count(),10);
  await p.emulateMedia({reducedMotion:'reduce'});assert.equal(await p.locator('.story-grid').evaluate(e=>getComputedStyle(e).animationName),'none');
- await p.getByRole('button',{name:'Dental',exact:true}).focus();await p.keyboard.press('Enter');await p.getByRole('heading',{name:'Ethan M.',exact:true}).waitFor();
+ await p.getByRole('button',{name:'Find stories like mine',exact:true}).click();assert(await p.getByLabel('Applicant type',{exact:true}).evaluate(el=>el===document.activeElement));assert.equal(await p.getByRole('link',{name:'Build my Pathly profile',exact:false}).getAttribute('href'),'/app');await p.getByRole('button',{name:'Dental',exact:true}).focus();await p.keyboard.press('Enter');await p.getByRole('heading',{name:'Ethan M.',exact:true}).waitFor();
  assert.equal(await p.evaluate(()=>window.__reads),0);assert.deepEqual(errors,[]);
  console.log('PASS homepage → filters → shareable URL → detail → retained filters; back/forward, refresh, empty/invalid routes, ten stories, keyboard, reduced motion, six viewport widths, no private storage access or browser errors');
  }finally{await b.close()}
